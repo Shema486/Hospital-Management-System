@@ -21,8 +21,8 @@ public class DoctorDAO {
             ps.setString(4, doctor.getSpecialization());
             ps.setString(5, doctor.getPhone());
 
-            if (doctor.getDepartmentId() != null) {
-                ps.setLong(6, doctor.getDepartmentId());
+            if (doctor.getDepartment() != null) {
+                ps.setLong(6, doctor.getDepartment().getDeptId());
             } else {
                 ps.setNull(6, java.sql.Types.BIGINT);
             }
@@ -115,8 +115,8 @@ public class DoctorDAO {
             ps.setString(4, doctor.getSpecialization());
             ps.setString(5, doctor.getPhone());
 
-            if (doctor.getDepartmentId() != null){
-                ps.setLong(6,doctor.getDepartmentId());
+            if (doctor.getDepartment() != null){
+                ps.setLong(6,doctor.getDepartment().getDeptId());
             }else {
                 ps.setNull(6, Types.BIGINT);
             }
