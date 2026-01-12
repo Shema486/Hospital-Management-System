@@ -41,7 +41,7 @@ public class Doctor {
     public String getLastName() {return lastName;}
     public String getEmail() {return email;}
     public String getSpecialization() {return specialization;}
-    public Long getDepartmentId() {return department !=null ? department.getDeptId():null;}
+    public Department getDepartment() {return department ;}
     public String getPhone() {return phone;}
 
     public void setDoctorId(Long doctorId) {this.doctorId = doctorId;}
