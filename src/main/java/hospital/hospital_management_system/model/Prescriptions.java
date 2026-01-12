@@ -35,5 +35,13 @@ public class Prescriptions {
     public void setPrescriptionDate(LocalDateTime prescriptionDate) { this.prescriptionDate = prescriptionDate; }
     public void setNotes(String notes) { this.notes = notes; }
 
-
+    @Override
+    public String toString() {
+        return "Prescription{" +
+                "prescriptionId=" + prescriptionId +
+                ", patient=" + (patient != null ? patient.getFirstName() + " " + patient.getLastName() : "null") +
+                ", prescriptionDate=" + prescriptionDate +
+                ", notes='" + notes + '\'' +
+                '}';
+    }
 }
