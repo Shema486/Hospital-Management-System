@@ -2,7 +2,6 @@ package hospital.hospital_management_system.dao;
 
 import hospital.hospital_management_system.model.Department;
 import hospital.hospital_management_system.model.Doctor;
-import hospital.hospital_management_system.model.Patient;
 import hospital.hospital_management_system.utils.DBConnection;
 
 import java.sql.*;
