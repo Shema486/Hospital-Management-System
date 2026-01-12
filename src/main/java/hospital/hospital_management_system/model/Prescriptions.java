@@ -8,5 +8,32 @@ public class Prescriptions {
     private LocalDateTime prescriptionDate;
     private String notes;
 
+    public Prescriptions() {}
+
+    public Prescriptions(Long prescriptionId, Patient patient, LocalDateTime prescriptionDate, String notes) {
+        this.prescriptionId = prescriptionId;
+        this.patient = patient;
+        this.prescriptionDate = prescriptionDate;
+        this.notes = notes;
+    }
+
+    public Prescriptions(Patient patient, LocalDateTime prescriptionDate, String notes) {
+        this.patient = patient;
+        this.prescriptionDate = prescriptionDate;
+        this.notes = notes;
+    }
+
+    // Getters
+    public Long getPrescriptionId() { return prescriptionId; }
+    public Patient getPatient() { return patient; }
+    public LocalDateTime getPrescriptionDate() { return prescriptionDate; }
+    public String getNotes() { return notes; }
+
+    // Setters
+    public void setPrescriptionId(Long prescriptionId) { this.prescriptionId = prescriptionId; }
+    public void setPatient(Patient patient) { this.patient = patient; }
+    public void setPrescriptionDate(LocalDateTime prescriptionDate) { this.prescriptionDate = prescriptionDate; }
+    public void setNotes(String notes) { this.notes = notes; }
+
 
 }
