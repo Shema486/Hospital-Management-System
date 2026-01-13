@@ -20,6 +20,18 @@ public class PrescriptionItems {
         this.dosageInstruction = dosageInstruction;
         this.quantityDispensed = quantityDispensed;
     }
+    public PrescriptionItems(Long prescriptionId, Long itemId,
+                             String dosageInstruction, int quantityDispensed) {
+        this.prescription = new Prescriptions();
+        this.prescription.setPrescriptionId(prescriptionId);
+
+        this.item = new MedicalInventory();
+        this.item.setItemId(itemId);
+
+        this.dosageInstruction = dosageInstruction;
+        this.quantityDispensed = quantityDispensed;
+    }
+
 
     // Getters
     public Prescriptions getPrescription() {return prescription;}
@@ -33,7 +45,13 @@ public class PrescriptionItems {
     public void setPrescription(Prescriptions prescription) {this.prescription = prescription;}
     public void setItem(MedicalInventory item) {this.item = item;}
     public void setDosageInstruction(String dosageInstruction) {this.dosageInstruction = dosageInstruction;}
-    public void setQuantityDispensed(int quantityDispensed) {this.quantityDispensed = quantityDispensed;}
+    public void setQuantityDispensed(int quantityDispensed) {
+        if (quantityDispensed <= 0) {
+            throw new IllegalArgumentException("Quantity must be greater than zero");
+        }
+        this.quantityDispensed = quantityDispensed;
+    }
+
 
     @Override
     public String toString() {
