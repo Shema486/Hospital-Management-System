@@ -22,8 +22,16 @@ public class PrescriptionItemDAO {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setLong(1, item.getPrescriptionId());
-            ps.setLong(2, item.getItemId());
+            if (item.getPrescription() != null) {
+                ps.setLong(1, item.getPrescriptionId());
+            } else {
+                ps.setNull(1, Types.BIGINT);
+            }
+            if (item.getItem() != null) {
+                ps.setLong(2, item.getItemId());
+            } else {
+                ps.setNull(3, Types.BIGINT);
+            }
             ps.setString(3, item.getDosageInstruction());
             ps.setInt(4, item.getQuantityDispensed());
 
