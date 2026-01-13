@@ -144,8 +144,18 @@ public class AppointmentDAO {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setLong(1, appointment.getPatientId());
-            ps.setLong(2, appointment.getDoctorId());
+            if (appointment.getPatientId() != null) {
+                ps.setLong(1, appointment.getPatientId());
+            } else {
+                ps.setNull(1, Types.BIGINT);
+            }
+
+            if (appointment.getDoctorId() != null) {
+                ps.setLong(2, appointment.getDoctorId());
+            } else {
+                ps.setNull(2, Types.BIGINT);
+            }
+
             ps.setTimestamp(3, Timestamp.valueOf(appointment.getAppointmentDate()));
             ps.setString(4, appointment.getStatus());
             ps.setString(5, appointment.getReason());
