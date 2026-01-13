@@ -28,7 +28,7 @@ public class DoctorDAO {
             }
 
             ps.executeUpdate();
-            System.out.println("Doctor added successfully: " + doctor.getDoctorId());
+            System.out.println("Doctor added successfully: ");
 
 
         }catch (SQLException e){
@@ -69,7 +69,7 @@ public class DoctorDAO {
         }
         return doctors;
     }
-    public List<Doctor> getAllPatients(){
+    public List<Doctor> getAllDoctors(){
         List<Doctor> doctors = new ArrayList<>();
         String sql = "SELECT * FROM doctors";
 
@@ -142,7 +142,7 @@ public class DoctorDAO {
     }
 
     private Doctor mapRowToDoctor(ResultSet rs) throws SQLException {
-        //rs.getLong("dept_id") != 0 ? new Department(rs.getLong("dept_id")) : null,
+
         Long deptId = rs.getLong("dept_id");
         Department department = !rs.wasNull() ? new Department(deptId) : null;
         return new Doctor(
