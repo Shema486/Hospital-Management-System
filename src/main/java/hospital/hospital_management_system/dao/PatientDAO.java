@@ -2,7 +2,7 @@ package hospital.hospital_management_system.dao;
 
 import hospital.hospital_management_system.model.Patient;
 import hospital.hospital_management_system.utils.DBConnection;
-import org.postgresql.util.PSQLException;
+
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -55,6 +55,15 @@ public class PatientDAO {
     }
 
     public void addPatient(Patient patient)  {
+        if (patient.getDob() == null) {
+            System.out.println("Error: DOB cannot be null");
+            return;
+        }
+        if (patient.getGender() == null ||
+                !(patient.getGender().equalsIgnoreCase("male") || patient.getGender().equalsIgnoreCase("female"))) {
+            System.out.println("Error: Invalid gender");
+            return;
+        }
         String sql = "INSERT INTO patients " +
                 "(first_name, last_name, dob, gender, contact_number, address) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
