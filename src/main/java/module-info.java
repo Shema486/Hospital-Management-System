@@ -20,8 +20,7 @@ module hospital.hospital_management_system {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
     requires org.postgresql.jdbc;
-    requires hospital.hospital_management_system;
-
+//    requires hospital.hospital_management_system;
 
     opens hospital.hospital_management_system to javafx.fxml;
     opens hospital.hospital_management_system.utils to javafx.fxml;
