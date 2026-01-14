@@ -58,6 +58,7 @@ public class Patient {
     public String getContact_number() {return contact_number;}
     public String getAddress() {return address;}
 
+    public void setFirstName(String first_name) {this.first_name = first_name;}
     public void setLastName(String last_name) {this.last_name = last_name;}
     public void setDob(LocalDate dob) {this.dob = dob;}
     public void setGender(String gender) {this.gender = gender;}
