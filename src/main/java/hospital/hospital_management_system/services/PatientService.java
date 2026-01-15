@@ -54,6 +54,15 @@ public class PatientService {
         return patients;
     }
 
+    public List<Patient> searchPatientByLastNameUsingStreams(String lastName) {
+        return searchPatientByLastName(lastName);
+    }
+
+    public List<Patient> sortPatientsByLastName(List<Patient> patients) {
+        patients.sort((p1, p2) -> p1.getLastName().compareToIgnoreCase(p2.getLastName()));
+        return patients;
+    }
+
     public void clearCache() {
         patientCache.clear();
     }

@@ -51,4 +51,49 @@ public class DepartmentDAO {
                 rs.getInt("location_floor")
         );
     }
+
+    public void updateDepartment(Department department) {
+        String sql = "UPDATE departments SET dept_name = ?, location_floor = ? WHERE dept_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, department.getDeptName());
+            ps.setInt(2, department.getLocationFloor());
+            ps.setLong(3, department.getDeptId());
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteDepartment(Long deptId) {
+        String sql = "DELETE FROM departments WHERE dept_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setLong(1, deptId);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Department getDepartmentById(Long deptId) {
+        String sql = "SELECT * FROM departments WHERE dept_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setLong(1, deptId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapToDepartment(rs);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

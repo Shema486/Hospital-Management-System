@@ -22,7 +22,7 @@ public class AppointmentService {
             throw new IllegalArgumentException("Appointment date is required");
         }
 
-        appointmentDAO.add(appointment);
+        appointmentDAO.addAppointment(appointment);
     }
 
     public List<Appointment> getAll() {

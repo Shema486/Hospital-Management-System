@@ -24,11 +24,11 @@ public class DepartmentService {
         departmentCache.remove(deptId);
     }
 
-    public Department getDepartmentsById(Long id) {
+    public Department getDepartmentById(Long id) {
         if (departmentCache.containsKey(id)) {
             return departmentCache.get(id);
         }
-        Department dept = departmentDAO.getDepartmentsById(id);
+        Department dept = departmentDAO.getDepartmentById(id);
         if (dept != null) departmentCache.put(dept.getDeptId(), dept);
         return dept;
     }

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="hospital.hospital_management_system.controller.PrescriptionItemController"
+      spacing="10" style="-fx-padding: 15; -fx-background-color: white;">
+
+    <Label text="Prescription Items (Medicine Details)" styleClass="label-title"/>
+    
+    <Separator/>
+
+    <!-- Prescription Selection -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Select Prescription:" style="-fx-font-weight: bold;" prefWidth="120"/>
+        <ComboBox fx:id="cbPrescription" prefWidth="250"/>
+    </HBox>
+
+    <!-- Items Table -->
+    <Label text="Medicines in Prescription:" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+    <TableView fx:id="itemTable" VBox.vgrow="ALWAYS" prefHeight="300">
+        <columns>
+            <TableColumn fx:id="colMedicine" text="Medicine Name" prefWidth="300"/>
+            <TableColumn fx:id="colDosage" text="Dosage Instructions" prefWidth="350"/>
+            <TableColumn fx:id="colQuantity" text="Quantity" prefWidth="100"/>
+        </columns>
+    </TableView>
+
+    <!-- Add Item Form -->
+    <VBox spacing="10" style="-fx-background-color: #F5F5F5; -fx-padding: 15; -fx-background-radius: 5;">
+        <Label text="Add Medicine to Prescription:" style="-fx-font-weight: bold;"/>
+        
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Medicine:" prefWidth="100"/>
+            <ComboBox fx:id="cbMedicine" prefWidth="250"/>
+        </HBox>
+
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Dosage:" prefWidth="100"/>
+            <TextField fx:id="txtDosage" promptText="e.g., Take 2 tablets daily" prefWidth="250"/>
+        </HBox>
+
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Quantity:" prefWidth="100"/>
+            <Spinner fx:id="spinQuantity" prefWidth="100"/>
+        </HBox>
+
+        <HBox spacing="10">
+            <Button text="Add Medicine" onAction="#addItem" styleClass="btn-primary" prefWidth="120" prefHeight="30"/>
+            <Button text="Remove Selected" onAction="#deleteItem" styleClass="btn-danger" prefWidth="120" prefHeight="30"/>
+            <Button text="Clear" onAction="#clearFields" prefWidth="80" prefHeight="30"/>
+        </HBox>
+    </VBox>
+
+    <!-- Info Box -->
+<!--    <VBox spacing="5" style="-fx-background-color: #E8F5E9; -fx-padding: 10; -fx-background-radius: 5;">-->
+<!--        <Label text="💊 How Prescription Items Work:" style="-fx-font-weight: bold;"/>-->
+<!--        <Label text="• Each prescription can have multiple medicines"/>-->
+<!--        <Label text="• Medicines come from Medical Inventory"/>-->
+<!--        <Label text="• Shows dosage instructions and quantity for each medicine"/>-->
+<!--        <Label text="• This is a many-to-many relationship: Prescription ↔ Inventory"/>-->
+<!--    </VBox>-->
+
+</VBox>

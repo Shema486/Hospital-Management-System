@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="hospital.hospital_management_system.controller.MedicalInventoryController"
+      spacing="10" style="-fx-padding: 15; -fx-background-color: white;">
+
+    <Label text="Medical Inventory Management" style="-fx-font-size: 16; -fx-font-weight: bold;"/>
+
+    <!-- Table -->
+    <TableView fx:id="inventoryTable" VBox.vgrow="ALWAYS" prefHeight="450">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="80"/>
+            <TableColumn fx:id="colName" text="Item Name" prefWidth="300"/>
+            <TableColumn fx:id="colQuantity" text="Stock Quantity" prefWidth="150"/>
+            <TableColumn fx:id="colPrice" text="Unit Price ($)" prefWidth="150"/>
+        </columns>
+    </TableView>
+
+    <!-- Form Section -->
+    <GridPane hgap="8" vgap="8">
+        <Label text="Item Name:" GridPane.columnIndex="0" GridPane.rowIndex="0" style="-fx-font-size: 11px;"/>
+        <TextField fx:id="txtName" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="200" prefHeight="28"/>
+
+        <Label text="Stock Quantity:" GridPane.columnIndex="0" GridPane.rowIndex="1" style="-fx-font-size: 11px;"/>
+        <TextField fx:id="txtQuantity" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="200" prefHeight="28"/>
+
+        <Label text="Unit Price ($):" GridPane.columnIndex="0" GridPane.rowIndex="2" style="-fx-font-size: 11px;"/>
+        <TextField fx:id="txtPrice" GridPane.columnIndex="1" GridPane.rowIndex="2" prefWidth="200" prefHeight="28"/>
+    </GridPane>
+
+    <!-- Buttons -->
+    <HBox spacing="8" alignment="CENTER">
+        <Button text="Add" onAction="#addItem" prefWidth="80" prefHeight="28" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 11px;"/>
+        <Button text="Update" onAction="#updateItem" prefWidth="80" prefHeight="28" style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-font-size: 11px;"/>
+        <Button text="Delete" onAction="#deleteItem" prefWidth="80" prefHeight="28" style="-fx-background-color: #F44336; -fx-text-fill: white; -fx-font-size: 11px;"/>
+        <Button text="Clear" onAction="#clearFields" prefWidth="80" prefHeight="28" style="-fx-background-color: #757575; -fx-text-fill: white; -fx-font-size: 11px;"/>
+    </HBox>
+
+</VBox>

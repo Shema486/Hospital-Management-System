@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="hospital.hospital_management_system.controller.ReportsController"
+      spacing="10" style="-fx-padding: 15; -fx-background-color: white;">
+
+    <Label text="Patient Appointment History" styleClass="label-title"/>
+    
+    <Separator/>
+
+    <!-- Patient Selection -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Select Patient:" style="-fx-font-weight: bold;"/>
+        <ComboBox fx:id="cbPatient" prefWidth="300"/>
+    </HBox>
+
+    <!-- Patient Info Display -->
+    <VBox spacing="5" style="-fx-background-color: #E3F2FD; -fx-padding: 15; -fx-background-radius: 5;">
+        <Label fx:id="lblPatientInfo" text="Select a patient to view details" style="-fx-font-size: 14px;"/>
+        <Label fx:id="lblTotalAppointments" text="Total Appointments: 0" style="-fx-font-weight: bold;"/>
+    </VBox>
+
+    <!-- Appointments Table -->
+    <Label text="Appointment History:" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+    <TableView fx:id="appointmentTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colAppId" text="Appointment ID" prefWidth="100"/>
+            <TableColumn fx:id="colDoctor" text="Doctor (Specialization)" prefWidth="220"/>
+            <TableColumn fx:id="colDepartment" text="Department" prefWidth="150"/>
+            <TableColumn fx:id="colDate" text="Date and Time" prefWidth="180"/>
+            <TableColumn fx:id="colStatus" text="Status" prefWidth="100"/>
+        </columns>
+    </TableView>
+
+    <!-- Info Box -->
+    <VBox spacing="5" style="-fx-background-color: #FFF3E0; -fx-padding: 10; -fx-background-radius: 5;">
+        <Label text="💡 How Tables Work Together (JOIN):" style="-fx-font-weight: bold;"/>
+        <Label text="• Patient → Appointment (one patient has many appointments)"/>
+        <Label text="• Doctor → Appointment (one doctor has many appointments)"/>
+        <Label text="• Department → Doctor → Appointment (shows 3-table join)"/>
+        <Label text="• This demonstrates relational database foreign keys!"/>
+    </VBox>
+
+</VBox>

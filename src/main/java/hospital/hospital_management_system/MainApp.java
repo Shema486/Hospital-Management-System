@@ -11,10 +11,15 @@ public class MainApp extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(
-                getClass().getResource("PatientView.fxml")
+                getClass().getResource("MainView.fxml")
         );
 
         Scene scene = new Scene(root, 1000, 600);
+        
+        // Load modern CSS stylesheet
+        String css = getClass().getResource("").toExternalForm();
+        scene.getStylesheets().add(css);
+        
         stage.setTitle("Hospital Management System");
         stage.setScene(scene);
         stage.show();

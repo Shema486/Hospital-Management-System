@@ -183,6 +183,26 @@ public class AppointmentDAO {
         }
     }
 
+    public void updateStatus(Long appointmentId, String status) {
+        String sql = "UPDATE appointments SET status = ? WHERE appointment_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, status);
+            ps.setLong(2, appointmentId);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            System.err.println("Error updating appointment status: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void delete(Long appointmentId) {
+        deleteAppointment(appointmentId);
+    }
+
     private Appointment mapRowToAppointment(ResultSet rs) throws SQLException {
 
         Long patientId = rs.getLong("patient_id");
