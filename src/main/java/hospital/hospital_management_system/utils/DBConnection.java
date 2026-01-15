@@ -6,11 +6,11 @@ import java.sql.SQLException;
 
 public final class DBConnection {
 
-    private static final String DB_HOST = EnvLoader.get("DB_HOST", "localhost");
-    private static final String DB_PORT = EnvLoader.get("DB_PORT", "5432");
-    private static final String DB_NAME = EnvLoader.get("DB_NAME", "hospital_db");
-    private static final String DB_USER = EnvLoader.get("DB_USER", "postgres");
-    private static final String DB_PASSWORD = EnvLoader.get("DB_PASSWORD", "Alphonse");
+    private static final String DB_HOST = EnvLoader.get("DB__HOST", "localhost");
+    private static final String DB_PORT = EnvLoader.get("DB__PORT", "5432");
+    private static final String DB_NAME = EnvLoader.get("DB__NAME", "hospital_db");
+    private static final String DB_USER = EnvLoader.get("DB__USER", "postgres");
+    private static final String DB_PASSWORD = EnvLoader.get("DB__PASSWORD", "Alphonse");
 
     private DBConnection() {} // Prevent instantiation
 
