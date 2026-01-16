@@ -48,8 +48,11 @@ public class PrescriptionItemDAO {
         List<PrescriptionItems> items = new ArrayList<>();
 
         String sql = """
-            SELECT * FROM prescription_items
-            WHERE prescription_id = ?
+            SELECT pi.prescription_id, pi.item_id, pi.dosage_instruction, pi.quantity_dispensed,
+                   mi.item_name, mi.stock_quantity, mi.unit_price
+            FROM prescription_items pi
+            INNER JOIN medical_inventory mi ON pi.item_id = mi.item_id
+            WHERE pi.prescription_id = ?
         """;
 
         try (Connection conn = DBConnection.getConnection();
@@ -96,8 +99,12 @@ public class PrescriptionItemDAO {
         Prescriptions prescription = new Prescriptions();
         prescription.setPrescriptionId(rs.getLong("prescription_id"));
 
+        // Load full MedicalInventory details from joined table
         MedicalInventory item = new MedicalInventory();
         item.setItemId(rs.getLong("item_id"));
+        item.setItemName(rs.getString("item_name"));
+        item.setStockQuantity(rs.getInt("stock_quantity"));
+        item.setUnitPrice(rs.getBigDecimal("unit_price"));
 
         return new PrescriptionItems(
                 prescription,
