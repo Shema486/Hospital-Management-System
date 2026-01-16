@@ -141,6 +141,45 @@ public class DoctorDAO {
         }
     }
 
+    public List<Doctor> getDoctorsPaginated(int limit, int offset){
+        List<Doctor> doctors = new ArrayList<>();
+        String sql = "SELECT * FROM doctors ORDER BY doctor_id LIMIT ? OFFSET ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, limit);
+            ps.setInt(2, offset);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    doctors.add(mapRowToDoctor(rs));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return doctors;
+    }
+
+    public int getTotalDoctorsCount(){
+        String sql = "SELECT COUNT(*) FROM doctors";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     private Doctor mapRowToDoctor(ResultSet rs) throws SQLException {
 
         Long deptId = rs.getLong("dept_id");
