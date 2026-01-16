@@ -28,10 +28,13 @@ public class DoctorController {
     @FXML private TextField txtPhone;
     @FXML private ComboBox<Department> cbDepartment;
     @FXML private TextField txtSearch;
+    @FXML private Pagination pagination;
 
     private final DoctorService doctorService = new DoctorService();
     private final DepartmentService departmentService = new DepartmentService();
     private final ObservableList<Doctor> doctorList = FXCollections.observableArrayList();
+    private static final int ITEMS_PER_PAGE = 10;
+    private boolean isSearchMode = false;
 
     @FXML
     public void initialize() {
@@ -43,6 +46,10 @@ public class DoctorController {
         colPhone.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getPhone()));
 
         loadDepartments();
+        
+        // Initialize pagination
+        initializePagination();
+        
         loadDoctors();
 
         doctorTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, selected) -> {
@@ -57,15 +64,38 @@ public class DoctorController {
         });
     }
 
+    private void initializePagination() {
+        int totalCount = doctorService.getTotalDoctorsCount();
+        int pageCount = (int) Math.ceil((double) totalCount / ITEMS_PER_PAGE);
+        pagination.setPageCount(pageCount > 0 ? pageCount : 1);
+        
+        pagination.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
+            if (!isSearchMode) {
+                loadPage(newIndex.intValue());
+            }
+        });
+    }
+
+    private void loadPage(int pageIndex) {
+        int offset = pageIndex * ITEMS_PER_PAGE;
+        List<Doctor> doctors = doctorService.getDoctorsPaginated(ITEMS_PER_PAGE, offset);
+        List<Doctor> sortedDoctors = doctorService.sortDoctorsByLastName(doctors);
+        doctorList.setAll(sortedDoctors);
+        doctorTable.setItems(doctorList);
+    }
+
     private void loadDepartments() {
         List<Department> departments = departmentService.getAllDepartments();
         cbDepartment.setItems(FXCollections.observableArrayList(departments));
     }
 
     private void loadDoctors() {
-        List<Doctor> doctors = doctorService.getAllDoctors();
-        doctorList.setAll(doctors);
-        doctorTable.setItems(doctorList);
+        isSearchMode = false;
+        int totalCount = doctorService.getTotalDoctorsCount();
+        int pageCount = (int) Math.ceil((double) totalCount / ITEMS_PER_PAGE);
+        pagination.setPageCount(pageCount > 0 ? pageCount : 1);
+        loadPage(0);
+        pagination.setCurrentPageIndex(0);
     }
 
     @FXML
@@ -73,7 +103,15 @@ public class DoctorController {
         Doctor doctor = new Doctor(txtFirstName.getText(), txtLastName.getText(), 
             txtEmail.getText(), txtSpecialization.getText(), cbDepartment.getValue(), txtPhone.getText());
         doctorService.addDoctor(doctor);
+        int currentPage = pagination.getCurrentPageIndex();
         loadDoctors();
+        // Try to stay on the same page if possible
+        int totalCount = doctorService.getTotalDoctorsCount();
+        int pageCount = (int) Math.ceil((double) totalCount / ITEMS_PER_PAGE);
+        if (currentPage < pageCount) {
+            pagination.setCurrentPageIndex(currentPage);
+            loadPage(currentPage);
+        }
         clearFields();
     }
 
@@ -88,7 +126,8 @@ public class DoctorController {
             selected.setPhone(txtPhone.getText());
             selected.setDepartmentId(cbDepartment.getValue());
             doctorService.updateDoctor(selected);
-            loadDoctors();
+            int currentPage = pagination.getCurrentPageIndex();
+            loadPage(currentPage);
             clearFields();
         }
     }
@@ -107,8 +146,13 @@ public class DoctorController {
     private void searchDoctor() {
         String specialization = txtSearch.getText();
         if (!specialization.isEmpty()) {
+            isSearchMode = true;
             List<Doctor> doctors = doctorService.findDoctorsBySpecialization(specialization);
             doctorList.setAll(doctors);
+            doctorTable.setItems(doctorList);
+            // Hide pagination during search
+            pagination.setPageCount(1);
+            pagination.setCurrentPageIndex(0);
         } else {
             loadDoctors();
         }

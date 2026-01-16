@@ -44,9 +44,13 @@ public class PatientController {
     private TextField txtAddress;
     @FXML
     private TextField txtSearch;
+    @FXML
+    private Pagination pagination;
 
     private final PatientService patientService = new PatientService();
     private final ObservableList<Patient> patientList = FXCollections.observableArrayList();
+    private static final int ITEMS_PER_PAGE = 10;
+    private boolean isSearchMode = false;
 
     @FXML
     public void initialize() {
@@ -62,6 +66,9 @@ public class PatientController {
 
         // Gender options
         cbGender.getItems().addAll("Male", "Female", "Other");
+
+        // Initialize pagination
+        initializePagination();
 
         // Load data
         loadPatients();
@@ -81,10 +88,33 @@ public class PatientController {
         );
     }
 
-    private void loadPatients() {
-        List<Patient> patients = patientService.getAllPatients();
-        patientList.setAll(patients);
+    private void initializePagination() {
+        int totalCount = patientService.getTotalPatientsCount();
+        int pageCount = (int) Math.ceil((double) totalCount / ITEMS_PER_PAGE);
+        pagination.setPageCount(pageCount > 0 ? pageCount : 1);
+        
+        pagination.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
+            if (!isSearchMode) {
+                loadPage(newIndex.intValue());
+            }
+        });
+    }
+
+    private void loadPage(int pageIndex) {
+        int offset = pageIndex * ITEMS_PER_PAGE;
+        List<Patient> patients = patientService.getPatientsPaginated(ITEMS_PER_PAGE, offset);
+        List<Patient> sortedPatients = patientService.sortPatientsByLastName(patients);
+        patientList.setAll(sortedPatients);
         patientTable.setItems(patientList);
+    }
+
+    private void loadPatients() {
+        isSearchMode = false;
+        int totalCount = patientService.getTotalPatientsCount();
+        int pageCount = (int) Math.ceil((double) totalCount / ITEMS_PER_PAGE);
+        pagination.setPageCount(pageCount > 0 ? pageCount : 1);
+        loadPage(0);
+        pagination.setCurrentPageIndex(0);
     }
 
     @FXML
@@ -99,7 +129,15 @@ public class PatientController {
         );
 
         patientService.addPatient(patient);
+        int currentPage = pagination.getCurrentPageIndex();
         loadPatients();
+        // Try to stay on the same page if possible
+        int totalCount = patientService.getTotalPatientsCount();
+        int pageCount = (int) Math.ceil((double) totalCount / ITEMS_PER_PAGE);
+        if (currentPage < pageCount) {
+            pagination.setCurrentPageIndex(currentPage);
+            loadPage(currentPage);
+        }
         clearFields();
     }
 
@@ -115,7 +153,8 @@ public class PatientController {
             selected.setAddress(txtAddress.getText());
 
             patientService.updatePatient(selected);
-            loadPatients();
+            int currentPage = pagination.getCurrentPageIndex();
+            loadPage(currentPage);
             clearFields();
         }
     }
@@ -134,8 +173,13 @@ public class PatientController {
     private void searchPatient() {
         String lastName = txtSearch.getText();
         if (!lastName.isEmpty()) {
+            isSearchMode = true;
             List<Patient> patients = patientService.searchPatientByLastNameUsingStreams(lastName);
             patientList.setAll(patients);
+            patientTable.setItems(patientList);
+            // Hide pagination during search
+            pagination.setPageCount(1);
+            pagination.setCurrentPageIndex(0);
         } else {
             loadPatients();
         }
