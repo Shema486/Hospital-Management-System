@@ -10,7 +10,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PrescriptionController {
 
@@ -26,21 +28,16 @@ public class PrescriptionController {
     private final PrescriptionService prescriptionService = new PrescriptionService();
     private final AppointmentService appointmentService = new AppointmentService();
     private final ObservableList<Prescriptions> prescriptionList = FXCollections.observableArrayList();
+    // Simple lookup to avoid repeated DB calls in cell renderers.
+    private final Map<Long, Appointment> appointmentById = new HashMap<>();
 
     @FXML
     public void initialize() {
         colId.setCellValueFactory(data -> new javafx.beans.property.SimpleLongProperty(data.getValue().getPrescriptionId()).asObject());
         colAppointment.setCellValueFactory(data -> {
             Long appId = data.getValue().getAppointmentId();
-            Appointment app = appointmentService.getAll().stream()
-                .filter(a -> a.getAppointmentId().equals(appId))
-                .findFirst().orElse(null);
-            if (app != null) {
-                return new javafx.beans.property.SimpleStringProperty(
-                    app.getPatient().getFirstName() + " " + app.getPatient().getLastName() + 
-                    " - Dr. " + app.getDoctor().getLastName());
-            }
-            return new javafx.beans.property.SimpleStringProperty("Appointment #" + appId);
+            Appointment app = appointmentById.get(appId);
+            return new javafx.beans.property.SimpleStringProperty(getAppointmentDisplay(appId, app));
         });
         colDate.setCellValueFactory(data -> new javafx.beans.property.SimpleObjectProperty<>(data.getValue().getPrescriptionDate()));
         colNotes.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getNotes()));
@@ -57,32 +54,12 @@ public class PrescriptionController {
 
     private void loadAppointments() {
         List<Appointment> appointments = appointmentService.getAll();
+        appointmentById.clear();
+        for (Appointment appointment : appointments) {
+            appointmentById.put(appointment.getAppointmentId(), appointment);
+        }
         cbAppointment.setItems(FXCollections.observableArrayList(appointments));
-        cbAppointment.setCellFactory(lv -> new ListCell<Appointment>() {
-            @Override
-            protected void updateItem(Appointment item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText("#" + item.getAppointmentId() + " - " + 
-                           item.getPatient().getFirstName() + " " + item.getPatient().getLastName() + 
-                           " with Dr. " + item.getDoctor().getLastName());
-                }
-            }
-        });
-        cbAppointment.setButtonCell(new ListCell<Appointment>() {
-            @Override
-            protected void updateItem(Appointment item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText("#" + item.getAppointmentId() + " - " + 
-                           item.getPatient().getFirstName() + " " + item.getPatient().getLastName());
-                }
-            }
-        });
+        configureAppointmentComboBox();
     }
 
     private void loadPrescriptions() {
@@ -129,5 +106,45 @@ public class PrescriptionController {
     private void clearFields() {
         cbAppointment.setValue(null);
         txtNotes.clear();
+    }
+
+    private void configureAppointmentComboBox() {
+        cbAppointment.setCellFactory(lv -> new ListCell<Appointment>() {
+            @Override
+            protected void updateItem(Appointment item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(getAppointmentDisplay(item.getAppointmentId(), item));
+                }
+            }
+        });
+        cbAppointment.setButtonCell(new ListCell<Appointment>() {
+            @Override
+            protected void updateItem(Appointment item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(getAppointmentDisplay(item.getAppointmentId(), item));
+                }
+            }
+        });
+    }
+
+    private String getAppointmentDisplay(Long appointmentId, Appointment appointment) {
+        if (appointment == null) {
+            return "Appointment #" + appointmentId;
+        }
+        String patientName = "Unknown Patient";
+        if (appointment.getPatient() != null) {
+            patientName = appointment.getPatient().getFirstName() + " " + appointment.getPatient().getLastName();
+        }
+        String doctorName = "Unknown Doctor";
+        if (appointment.getDoctor() != null) {
+            doctorName = "Dr. " + appointment.getDoctor().getLastName();
+        }
+        return "#" + appointmentId + " - " + patientName + " - " + doctorName;
     }
 }

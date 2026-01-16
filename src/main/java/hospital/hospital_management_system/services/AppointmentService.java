@@ -8,6 +8,7 @@ import java.util.List;
 public class AppointmentService {
 
     private final AppointmentDAO appointmentDAO = new AppointmentDAO();
+    private final PrescriptionService prescriptionService = new PrescriptionService();
 
     public void create(Appointment appointment) {
         if (appointment == null) {
@@ -46,6 +47,9 @@ public class AppointmentService {
     public void delete(Long appointmentId) {
         if (appointmentId == null) {
             throw new IllegalArgumentException("Appointment ID cannot be null");
+        }
+        if (prescriptionService.hasPrescriptionForAppointment(appointmentId)) {
+            throw new IllegalStateException("Cannot delete appointment with an existing prescription.");
         }
         appointmentDAO.delete(appointmentId);
     }

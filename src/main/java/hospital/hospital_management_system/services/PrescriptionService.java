@@ -56,6 +56,13 @@ public class PrescriptionService {
         prescriptionDAO.deletePrescription(id);
         prescriptionCache.remove(id);
     }
+
+    public boolean hasPrescriptionForAppointment(Long appointmentId) {
+        if (appointmentId == null) {
+            return false;
+        }
+        return !prescriptionDAO.findByAppointmentId(appointmentId).isEmpty();
+    }
     
     // Clear cache
     public void clearCache() {

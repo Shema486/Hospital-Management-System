@@ -49,7 +49,7 @@ public class Doctor {
     public void setLastName(String lastName) {this.lastName = lastName;}
     public void setEmail(String email) {this.email = email;}
     public void setSpecialization(String specialization) {this.specialization = specialization;}
-    public void setDepartmentId(Department department) {this.department = this.department;}
+    public void setDepartmentId(Department department) {this.department = department;}
     public void setPhone(String phone) {this.phone = phone;}
 
     @Override

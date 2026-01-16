@@ -10,7 +10,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.StringConverter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -47,17 +46,13 @@ public class AppointmentController {
     private void setupTableColumns() {
         colPatient.setCellValueFactory(data -> {
             Patient patient = data.getValue().getPatient();
-            String name = patient != null 
-                ? patient.getFirstName() + " " + patient.getLastName()
-                : "N/A";
+            String name = getPatientDisplayName(patient);
             return new javafx.beans.property.SimpleStringProperty(name);
         });
         
         colDoctor.setCellValueFactory(data -> {
             Doctor doctor = data.getValue().getDoctor();
-            String name = doctor != null 
-                ? doctor.getFirstName() + " " + doctor.getLastName()
-                : "N/A";
+            String name = getDoctorDisplayName(doctor);
             return new javafx.beans.property.SimpleStringProperty(name);
         });
         
@@ -192,6 +187,8 @@ public class AppointmentController {
             appointmentService.delete(selected.getAppointmentId());
             showInfo("Success", "Appointment deleted successfully");
             loadAppointments();
+        } catch (IllegalStateException e) {
+            showWarning("Cannot Delete", e.getMessage());
         } catch (Exception e) {
             showError("Error", "Failed to delete appointment", e.getMessage());
             e.printStackTrace();
@@ -210,9 +207,12 @@ public class AppointmentController {
             var allAppointments = appointmentService.getAll();
             var filtered = allAppointments.stream()
                 .filter(app -> {
-                    String patientName = (app.getPatient().getFirstName() + " " + app.getPatient().getLastName()).toLowerCase();
-                    String doctorName = (app.getDoctor().getFirstName() + " " + app.getDoctor().getLastName()).toLowerCase();
-                    return patientName.contains(searchText) || doctorName.contains(searchText);
+                    String patientName = getPatientDisplayName(app.getPatient()).toLowerCase();
+                    String doctorName = getDoctorDisplayName(app.getDoctor()).toLowerCase();
+                    String reason = app.getReason() == null ? "" : app.getReason().toLowerCase();
+                    return patientName.contains(searchText)
+                            || doctorName.contains(searchText)
+                            || reason.contains(searchText);
                 })
                 .toList();
             appointmentList.setAll(filtered);
@@ -236,6 +236,36 @@ public class AppointmentController {
         datePicker.setValue(null);
         timeField.clear();
         reasonField.clear();
+    }
+
+    private String getPatientDisplayName(Patient patient) {
+        if (patient == null) {
+            return "N/A";
+        }
+        String firstName = patient.getFirstName();
+        String lastName = patient.getLastName();
+        String fullName = (firstName == null ? "" : firstName.trim()) +
+                (lastName == null ? "" : " " + lastName.trim());
+        String trimmed = fullName.trim();
+        if (!trimmed.isEmpty()) {
+            return trimmed;
+        }
+        return patient.getPatientId() != 0 ? "Patient #" + patient.getPatientId() : "Unknown Patient";
+    }
+
+    private String getDoctorDisplayName(Doctor doctor) {
+        if (doctor == null) {
+            return "N/A";
+        }
+        String firstName = doctor.getFirstName();
+        String lastName = doctor.getLastName();
+        String fullName = (firstName == null ? "" : firstName.trim()) +
+                (lastName == null ? "" : " " + lastName.trim());
+        String trimmed = fullName.trim();
+        if (!trimmed.isEmpty()) {
+            return trimmed;
+        }
+        return doctor.getDoctorId() != null ? "Doctor #" + doctor.getDoctorId() : "Unknown Doctor";
     }
 
     private void showInfo(String title, String message) {

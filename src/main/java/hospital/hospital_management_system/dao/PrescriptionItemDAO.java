@@ -30,7 +30,7 @@ public class PrescriptionItemDAO {
             if (item.getItem() != null) {
                 ps.setLong(2, item.getItemId());
             } else {
-                ps.setNull(3, Types.BIGINT);
+                ps.setNull(2, Types.BIGINT);
             }
             ps.setString(3, item.getDosageInstruction());
             ps.setInt(4, item.getQuantityDispensed());

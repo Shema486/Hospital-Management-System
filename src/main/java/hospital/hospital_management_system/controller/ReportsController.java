@@ -31,14 +31,13 @@ public class ReportsController {
         // Setup table columns
         colAppId.setCellValueFactory(data -> new javafx.beans.property.SimpleLongProperty(data.getValue().getAppointmentId()).asObject());
         colDoctor.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-            "Dr. " + data.getValue().getDoctor().getLastName() + " (" + data.getValue().getDoctor().getSpecialization() + ")"));
+            getDoctorDisplay(data.getValue())));
         colDepartment.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-            data.getValue().getDoctor().getDepartment() != null ? 
-            data.getValue().getDoctor().getDepartment().getDeptName() : "N/A"));
+            getDepartmentDisplay(data.getValue())));
         colDate.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-            data.getValue().getAppointmentDate().toString()));
+            data.getValue().getAppointmentDate() != null ? data.getValue().getAppointmentDate().toString() : "N/A"));
         colStatus.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-            data.getValue().getStatus()));
+            data.getValue().getStatus() != null ? data.getValue().getStatus() : "N/A"));
 
         // Load patients into dropdown
         loadPatients();
@@ -81,7 +80,7 @@ public class ReportsController {
         Patient selected = cbPatient.getValue();
         if (selected != null) {
             // Show patient info
-            lblPatientInfo.setText("Patient: " + selected.getFirstName() + " " + selected.getLastName() + 
+            lblPatientInfo.setText("Patient: " + selected.getFirstName() + " " + selected.getLastName() +
                                   " | DOB: " + selected.getDob() + " | Contact: " + selected.getContact_number());
             
             // Get all appointments and filter by patient
@@ -95,5 +94,22 @@ public class ReportsController {
             
             lblTotalAppointments.setText("Total Appointments: " + patientAppointments.size());
         }
+    }
+
+    private String getDoctorDisplay(Appointment appointment) {
+        if (appointment == null || appointment.getDoctor() == null) {
+            return "N/A";
+        }
+        Doctor doctor = appointment.getDoctor();
+        String specialization = doctor.getSpecialization() != null ? doctor.getSpecialization() : "General";
+        return "Dr. " + doctor.getLastName() + " (" + specialization + ")";
+    }
+
+    private String getDepartmentDisplay(Appointment appointment) {
+        if (appointment == null || appointment.getDoctor() == null) {
+            return "N/A";
+        }
+        Department dept = appointment.getDoctor().getDepartment();
+        return dept != null ? dept.getDeptName() : "N/A";
     }
 }

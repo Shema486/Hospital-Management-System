@@ -7,7 +7,9 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PrescriptionItemController {
 
@@ -26,6 +28,8 @@ public class PrescriptionItemController {
     private final MedicalInventoryService inventoryService = new MedicalInventoryService();
     private final AppointmentService appointmentService = new AppointmentService();
     private final ObservableList<PrescriptionItems> itemList = FXCollections.observableArrayList();
+    // Simple lookup to avoid repeated DB calls in cell renderers.
+    private final Map<Long, Appointment> appointmentById = new HashMap<>();
 
     @FXML
     public void initialize() {
@@ -54,6 +58,10 @@ public class PrescriptionItemController {
 
     private void loadPrescriptions() {
         List<Prescriptions> prescriptions = prescriptionService.getAllPrescriptions();
+        appointmentById.clear();
+        for (Appointment appointment : appointmentService.getAll()) {
+            appointmentById.put(appointment.getAppointmentId(), appointment);
+        }
         cbPrescription.setItems(FXCollections.observableArrayList(prescriptions));
         cbPrescription.setCellFactory(lv -> new ListCell<Prescriptions>() {
             @Override
@@ -62,15 +70,8 @@ public class PrescriptionItemController {
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    Appointment app = appointmentService.getAll().stream()
-                        .filter(a -> a.getAppointmentId().equals(item.getAppointmentId()))
-                        .findFirst().orElse(null);
-                    if (app != null) {
-                        setText(app.getPatient().getFirstName() + " " + app.getPatient().getLastName() + 
-                               " - Dr. " + app.getDoctor().getLastName());
-                    } else {
-                        setText("Prescription #" + item.getPrescriptionId());
-                    }
+                    Appointment app = appointmentById.get(item.getAppointmentId());
+                    setText(getPrescriptionLabel(item, app));
                 }
             }
         });
@@ -81,14 +82,8 @@ public class PrescriptionItemController {
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    Appointment app = appointmentService.getAll().stream()
-                        .filter(a -> a.getAppointmentId().equals(item.getAppointmentId()))
-                        .findFirst().orElse(null);
-                    if (app != null) {
-                        setText(app.getPatient().getFirstName() + " " + app.getPatient().getLastName());
-                    } else {
-                        setText("Prescription #" + item.getPrescriptionId());
-                    }
+                    Appointment app = appointmentById.get(item.getAppointmentId());
+                    setText(getPrescriptionLabel(item, app));
                 }
             }
         });
@@ -123,38 +118,35 @@ public class PrescriptionItemController {
 
     @FXML
     private void addItem() {
-        if (cbPrescription.getValue() != null && cbMedicine.getValue() != null && !txtDosage.getText().isEmpty()) {
-            PrescriptionItems item = new PrescriptionItems(
-                cbPrescription.getValue().getPrescriptionId(),
-                cbMedicine.getValue().getItemId(),
-                txtDosage.getText(),
-                spinQuantity.getValue()
-            );
-            itemService.addPrescriptionItem(item);
-            
-            // Update inventory stock
-            MedicalInventory medicine = cbMedicine.getValue();
-            int newStock = medicine.getStockQuantity() - spinQuantity.getValue();
-            if (newStock >= 0) {
-                medicine.setStockQuantity(newStock);
-                inventoryService.updateInventoryItem(medicine);
-            }
-            
-            loadItems();
-            loadMedicines();
-            clearFields();
+        if (!isFormValid()) {
+            return;
         }
+        MedicalInventory medicine = cbMedicine.getValue();
+        int requested = spinQuantity.getValue();
+        if (medicine.getStockQuantity() < requested) {
+            showWarning("Insufficient Stock", "Not enough stock for this item.");
+            return;
+        }
+        PrescriptionItems item = new PrescriptionItems(
+            cbPrescription.getValue().getPrescriptionId(),
+            medicine.getItemId(),
+            txtDosage.getText(),
+            requested
+        );
+        itemService.addPrescriptionItem(item);
+
+        updateInventoryStock(medicine, -requested);
+        loadItems();
+        loadMedicines();
+        clearFields();
     }
 
     @FXML
     private void deleteItem() {
         PrescriptionItems selected = itemTable.getSelectionModel().getSelectedItem();
         if (selected != null) {
-            // Return stock to inventory
             MedicalInventory medicine = selected.getItem();
-            medicine.setStockQuantity(medicine.getStockQuantity() + selected.getQuantityDispensed());
-            inventoryService.updateInventoryItem(medicine);
-            
+            updateInventoryStock(medicine, selected.getQuantityDispensed());
             itemService.deleteItem(selected.getPrescriptionId(), selected.getItemId());
             loadItems();
             loadMedicines();
@@ -167,5 +159,46 @@ public class PrescriptionItemController {
         cbMedicine.setValue(null);
         txtDosage.clear();
         spinQuantity.getValueFactory().setValue(1);
+    }
+
+    private boolean isFormValid() {
+        if (cbPrescription.getValue() == null) {
+            showWarning("Missing Data", "Please select a prescription.");
+            return false;
+        }
+        if (cbMedicine.getValue() == null) {
+            showWarning("Missing Data", "Please select a medicine.");
+            return false;
+        }
+        if (txtDosage.getText().isEmpty()) {
+            showWarning("Missing Data", "Please enter dosage instructions.");
+            return false;
+        }
+        return true;
+    }
+
+    private void updateInventoryStock(MedicalInventory medicine, int change) {
+        int newStock = medicine.getStockQuantity() + change;
+        medicine.setStockQuantity(newStock);
+        inventoryService.updateInventoryItem(medicine);
+    }
+
+    private String getPrescriptionLabel(Prescriptions prescription, Appointment appointment) {
+        if (appointment == null) {
+            return "Prescription #" + prescription.getPrescriptionId();
+        }
+        Patient patient = appointment.getPatient();
+        Doctor doctor = appointment.getDoctor();
+        String patientName = patient == null ? "Unknown Patient" : patient.getFirstName() + " " + patient.getLastName();
+        String doctorName = doctor == null ? "Unknown Doctor" : "Dr. " + doctor.getLastName();
+        return patientName + " - " + doctorName;
+    }
+
+    private void showWarning(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

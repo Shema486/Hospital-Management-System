@@ -6,7 +6,6 @@ import hospital.hospital_management_system.model.Department;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class DepartmentService {
     private DepartmentDAO departmentDAO = new DepartmentDAO();
@@ -44,10 +43,6 @@ public class DepartmentService {
     public void updateDepartment(Department dept) {
         departmentDAO.updateDepartment(dept);
         departmentCache.put(dept.getDeptId(), dept);
-    }
-    public List<Department> searchByName(String name){
-        return  getAllDepartments().stream()
-                .filter(department -> department.getDeptName().toLowerCase().contains(name.toLowerCase())).collect(Collectors.toList());
     }
     public  void clearCache(){
         departmentCache.clear();

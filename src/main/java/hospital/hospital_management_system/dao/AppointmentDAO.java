@@ -11,6 +11,9 @@ import java.util.List;
 
 public class AppointmentDAO {
 
+    private final PatientDAO patientDAO = new PatientDAO();
+    private final DoctorDAO doctorDAO = new DoctorDAO();
+
 
     public void addAppointment(Appointment appointment) {
 
@@ -67,51 +70,6 @@ public class AppointmentDAO {
         return null;
     }
 
-    public List<Appointment> findByPatient(Long patientId) {
-
-        List<Appointment> appointments = new ArrayList<>();
-        String sql = "SELECT * FROM appointments WHERE patient_id = ?";
-
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setLong(1, patientId);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    appointments.add(mapRowToAppointment(rs));
-                }
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return appointments;
-    }
-
-    public List<Appointment> findByDoctor(Long doctorId) {
-
-        List<Appointment> appointments = new ArrayList<>();
-        String sql = "SELECT * FROM appointments WHERE doctor_id = ?";
-
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setLong(1, doctorId);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    appointments.add(mapRowToAppointment(rs));
-                }
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return appointments;
-    }
 
     public List<Appointment> findAll() {
 
@@ -131,41 +89,6 @@ public class AppointmentDAO {
         }
 
         return appointments;
-    }
-
-    public void updateAppointment(Appointment appointment) {
-
-        String sql = """
-            UPDATE appointments
-            SET patient_id = ?, doctor_id = ?, appointment_date = ?, status = ?, reason = ?
-            WHERE appointment_id = ?
-            """;
-
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            if (appointment.getPatientId() != null) {
-                ps.setLong(1, appointment.getPatientId());
-            } else {
-                ps.setNull(1, Types.BIGINT);
-            }
-
-            if (appointment.getDoctorId() != null) {
-                ps.setLong(2, appointment.getDoctorId());
-            } else {
-                ps.setNull(2, Types.BIGINT);
-            }
-
-            ps.setTimestamp(3, Timestamp.valueOf(appointment.getAppointmentDate()));
-            ps.setString(4, appointment.getStatus());
-            ps.setString(5, appointment.getReason());
-            ps.setLong(6, appointment.getAppointmentId());
-
-            ps.executeUpdate();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     public void deleteAppointment(Long appointmentId) {
@@ -206,10 +129,16 @@ public class AppointmentDAO {
     private Appointment mapRowToAppointment(ResultSet rs) throws SQLException {
 
         Long patientId = rs.getLong("patient_id");
-        Patient patient = rs.wasNull() ? null : new Patient(patientId);
+        Patient patient = rs.wasNull() ? null : patientDAO.searchPatientById(patientId);
+        if (patient == null && patientId != null) {
+            patient = new Patient(patientId);
+        }
 
         Long doctorId = rs.getLong("doctor_id");
-        Doctor doctor = rs.wasNull() ? null : new Doctor(doctorId);
+        Doctor doctor = rs.wasNull() ? null : doctorDAO.findById(doctorId);
+        if (doctor == null && doctorId != null) {
+            doctor = new Doctor(doctorId);
+        }
 
         return new Appointment(
                 rs.getLong("appointment_id"),
