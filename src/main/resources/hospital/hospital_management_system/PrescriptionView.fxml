@@ -5,9 +5,9 @@
 
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="hospital.hospital_management_system.controller.PrescriptionController"
-      spacing="10" style="-fx-padding: 15; -fx-background-color: white;">
+      spacing="10" styleClass="page">
 
-    <Label text="Prescription Management" style="-fx-font-size: 16; -fx-font-weight: bold;"/>
+    <Label text="Prescription Management" styleClass="section-title"/>
 
     <!-- Table -->
     <TableView fx:id="prescriptionTable" VBox.vgrow="ALWAYS" prefHeight="400">
@@ -20,20 +20,20 @@
     </TableView>
 
     <!-- Form Section -->
-    <GridPane hgap="8" vgap="8">
-        <Label text="Appointment:" GridPane.columnIndex="0" GridPane.rowIndex="0" style="-fx-font-size: 11px;"/>
+    <GridPane hgap="8" vgap="8" styleClass="form-section">
+        <Label text="Appointment:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="label-subtitle"/>
         <ComboBox fx:id="cbAppointment" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="350" prefHeight="28"/>
 
-        <Label text="Notes:" GridPane.columnIndex="0" GridPane.rowIndex="1" style="-fx-font-size: 11px;"/>
+        <Label text="Notes:" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="label-subtitle"/>
         <TextArea fx:id="txtNotes" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="350" prefHeight="60"/>
     </GridPane>
 
     <!-- Buttons -->
     <HBox spacing="8" alignment="CENTER">
-        <Button text="Add" onAction="#addPrescription" prefWidth="80" prefHeight="28" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 11px;"/>
-        <Button text="Update" onAction="#updatePrescription" prefWidth="80" prefHeight="28" style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-font-size: 11px;"/>
-        <Button text="Delete" onAction="#deletePrescription" prefWidth="80" prefHeight="28" style="-fx-background-color: #F44336; -fx-text-fill: white; -fx-font-size: 11px;"/>
-        <Button text="Clear" onAction="#clearFields" prefWidth="80" prefHeight="28" style="-fx-background-color: #757575; -fx-text-fill: white; -fx-font-size: 11px;"/>
+        <Button text="Add" onAction="#addPrescription" prefWidth="80" prefHeight="28"/>
+        <Button text="Update" onAction="#updatePrescription" prefWidth="80" prefHeight="28" styleClass="btn-secondary"/>
+        <Button text="Delete" onAction="#deletePrescription" prefWidth="80" prefHeight="28" styleClass="btn-danger"/>
+        <Button text="Clear" onAction="#clearFields" prefWidth="80" prefHeight="28" styleClass="btn-ghost"/>
     </HBox>
 
 </VBox>

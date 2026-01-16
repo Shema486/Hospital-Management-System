@@ -7,66 +7,50 @@
             fx:controller="hospital.hospital_management_system.controller.MainController"
             prefHeight="800" prefWidth="1400">
 
-    <!-- Top Header -->
     <top>
-        <VBox styleClass="header-bar">
-            <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-padding: 5;">
-                <Label text="🏥" style="-fx-font-size: 32px;"/>
-                <VBox>
-                    <Label text="Hospital Management System" styleClass="label-header"/>
-                    <Label text="Manage patients, doctors, appointments and more" style="-fx-text-fill: rgba(255,255,255,0.9); -fx-font-size: 12px;"/>
-                </VBox>
-            </HBox>
-            
-            <!-- Navigation -->
-            <HBox spacing="3" style="-fx-padding: 8 10 5 10;">
-                <Button text="Patients" onAction="#showPatients" styleClass="menu-button" prefWidth="88" prefHeight="32"/>
-                <Button text="Doctors" onAction="#showDoctors" styleClass="menu-button" prefWidth="88" prefHeight="32"/>
-                <Button text="Departments" onAction="#showDepartments" styleClass="menu-button" prefWidth="88" prefHeight="32"/>
-                <Button text="Appointments" onAction="#showAppointments" styleClass="menu-button" prefWidth="88" prefHeight="32"/>
-                <Button text="Prescriptions" onAction="#showPrescriptions" styleClass="menu-button" prefWidth="88" prefHeight="32"/>
-                <Button text="Rx Items" onAction="#showPrescriptionItems" styleClass="menu-button" prefWidth="88" prefHeight="32"/>
-                <Button text="Feedback" onAction="#showFeedback" styleClass="menu-button" prefWidth="88" prefHeight="32"/>
-                <Button text="Inventory" onAction="#showInventory" styleClass="menu-button" prefWidth="88" prefHeight="32"/>
-                <Button text="Reports" onAction="#showReports" styleClass="menu-button" prefWidth="88" prefHeight="32"/>
-            </HBox>
-        </VBox>
+        <HBox styleClass="header-bar" alignment="CENTER_LEFT" spacing="12">
+            <Label text="Hospital Management System" styleClass="header-title"/>
+            <Label text="Manage patients, doctors, appointments and more" styleClass="header-subtitle"/>
+        </HBox>
     </top>
 
-    <!-- Center Content -->
+    <left>
+        <VBox styleClass="sidebar">
+            <Button text="Patients" onAction="#showPatients" styleClass="nav-button"/>
+            <Button text="Doctors" onAction="#showDoctors" styleClass="nav-button"/>
+            <Button text="Departments" onAction="#showDepartments" styleClass="nav-button"/>
+            <Button text="Appointments" onAction="#showAppointments" styleClass="nav-button"/>
+            <Button text="Prescriptions" onAction="#showPrescriptions" styleClass="nav-button"/>
+            <Button text="Rx Items" onAction="#showPrescriptionItems" styleClass="nav-button"/>
+            <Button text="Feedback" onAction="#showFeedback" styleClass="nav-button"/>
+            <Button text="Inventory" onAction="#showInventory" styleClass="nav-button"/>
+            <Button text="Reports" onAction="#showReports" styleClass="nav-button"/>
+        </VBox>
+    </left>
+
     <center>
         <BorderPane fx:id="mainPane">
             <center>
-                <VBox alignment="CENTER" spacing="25" style="-fx-padding: 40;">
-                    <VBox alignment="CENTER" spacing="10">
-                        <Label text="🏥" style="-fx-font-size: 64px;"/>
-                        <Label text="Welcome to Hospital Management System" styleClass="label-title"/>
-                        <Label text="Select a module from the menu above to get started" style="-fx-font-size: 14px; -fx-text-fill: #6b7280;"/>
-                    </VBox>
-                    
-                    <HBox spacing="20" alignment="CENTER">
-                        <VBox spacing="8" alignment="CENTER" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10; -fx-border-color: #e5e7eb; -fx-border-radius: 10; -fx-border-width: 1;" prefWidth="200">
-                            <Label text="👥" style="-fx-font-size: 32px;"/>
-                            <Label text="Patient Management" style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
-                            <Label text="Register and manage patients" style="-fx-font-size: 11px; -fx-text-fill: #6b7280; -fx-text-alignment: center;" wrapText="true"/>
+                <VBox alignment="CENTER" spacing="16" style="-fx-padding: 30;">
+                    <Label text="Welcome to Hospital Management System" styleClass="label-title"/>
+                    <Label text="Select a module from the left menu to get started" styleClass="label-subtitle"/>
+
+                    <HBox spacing="16" alignment="CENTER">
+                        <VBox styleClass="card" alignment="CENTER" spacing="6" prefWidth="200">
+                            <Label text="Patient Management" styleClass="card-title"/>
+                            <Label text="Register and manage patients" styleClass="card-text" wrapText="true"/>
                         </VBox>
-                        
-                        <VBox spacing="8" alignment="CENTER" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10; -fx-border-color: #e5e7eb; -fx-border-radius: 10; -fx-border-width: 1;" prefWidth="200">
-                            <Label text="👨‍⚕️" style="-fx-font-size: 32px;"/>
-                            <Label text="Doctor Management" style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
-                            <Label text="Manage doctors and specialists" style="-fx-font-size: 11px; -fx-text-fill: #6b7280; -fx-text-alignment: center;" wrapText="true"/>
+                        <VBox styleClass="card" alignment="CENTER" spacing="6" prefWidth="200">
+                            <Label text="Doctor Management" styleClass="card-title"/>
+                            <Label text="Manage doctors and specialists" styleClass="card-text" wrapText="true"/>
                         </VBox>
-                        
-                        <VBox spacing="8" alignment="CENTER" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10; -fx-border-color: #e5e7eb; -fx-border-radius: 10; -fx-border-width: 1;" prefWidth="200">
-                            <Label text="📅" style="-fx-font-size: 32px;"/>
-                            <Label text="Appointments" style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
-                            <Label text="Schedule and track appointments" style="-fx-font-size: 11px; -fx-text-fill: #6b7280; -fx-text-alignment: center;" wrapText="true"/>
+                        <VBox styleClass="card" alignment="CENTER" spacing="6" prefWidth="200">
+                            <Label text="Appointments" styleClass="card-title"/>
+                            <Label text="Schedule and track appointments" styleClass="card-text" wrapText="true"/>
                         </VBox>
-                        
-                        <VBox spacing="8" alignment="CENTER" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10; -fx-border-color: #e5e7eb; -fx-border-radius: 10; -fx-border-width: 1;" prefWidth="200">
-                            <Label text="📊" style="-fx-font-size: 32px;"/>
-                            <Label text="Reports" style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
-                            <Label text="View patient history and analytics" style="-fx-font-size: 11px; -fx-text-fill: #6b7280; -fx-text-alignment: center;" wrapText="true"/>
+                        <VBox styleClass="card" alignment="CENTER" spacing="6" prefWidth="200">
+                            <Label text="Reports" styleClass="card-title"/>
+                            <Label text="View patient history and analytics" styleClass="card-text" wrapText="true"/>
                         </VBox>
                     </HBox>
                 </VBox>
@@ -74,14 +58,13 @@
         </BorderPane>
     </center>
 
-    <!-- Bottom Status -->
     <bottom>
-        <HBox styleClass="status-bar" alignment="CENTER" spacing="20">
-            <Label text="Hospital Management System v1.0" style="-fx-text-fill: #6b7280; -fx-font-size: 11px;"/>
-            <Label text="•" style="-fx-text-fill: #d1d5db;"/>
-            <Label text="PostgreSQL Database" style="-fx-text-fill: #6b7280; -fx-font-size: 11px;"/>
-            <Label text="•" style="-fx-text-fill: #d1d5db;"/>
-            <Label text="JavaFX Framework" style="-fx-text-fill: #6b7280; -fx-font-size: 11px;"/>
+        <HBox styleClass="status-bar" alignment="CENTER" spacing="16">
+            <Label text="Hospital Management System v1.0" styleClass="label-subtitle"/>
+            <Label text="•" styleClass="label-subtitle"/>
+            <Label text="PostgreSQL Database" styleClass="label-subtitle"/>
+            <Label text="•" styleClass="label-subtitle"/>
+            <Label text="JavaFX Framework" styleClass="label-subtitle"/>
         </HBox>
     </bottom>
 

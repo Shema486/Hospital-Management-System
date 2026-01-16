@@ -5,9 +5,9 @@
 
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="hospital.hospital_management_system.controller.PatientFeedbackController"
-      spacing="10" style="-fx-padding: 15; -fx-background-color: white;">
+      spacing="10" styleClass="page">
 
-    <Label text="Patient Feedback Management" style="-fx-font-size: 16; -fx-font-weight: bold;"/>
+    <Label text="Patient Feedback Management" styleClass="section-title"/>
 
     <!-- Table -->
     <TableView fx:id="feedbackTable" VBox.vgrow="ALWAYS" prefHeight="400">
@@ -21,22 +21,22 @@
     </TableView>
 
     <!-- Form Section -->
-    <GridPane hgap="8" vgap="8">
-        <Label text="Patient ID:" GridPane.columnIndex="0" GridPane.rowIndex="0" style="-fx-font-size: 11px;"/>
+    <GridPane hgap="8" vgap="8" styleClass="form-section">
+        <Label text="Patient ID:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="label-subtitle"/>
         <TextField fx:id="txtPatientId" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="200" prefHeight="28"/>
 
-        <Label text="Rating (1-5):" GridPane.columnIndex="0" GridPane.rowIndex="1" style="-fx-font-size: 11px;"/>
+        <Label text="Rating (1-5):" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="label-subtitle"/>
         <ComboBox fx:id="cbRating" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="200" prefHeight="28"/>
 
-        <Label text="Comments:" GridPane.columnIndex="0" GridPane.rowIndex="2" style="-fx-font-size: 11px;"/>
+        <Label text="Comments:" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="label-subtitle"/>
         <TextArea fx:id="txtComments" GridPane.columnIndex="1" GridPane.rowIndex="2" prefWidth="200" prefHeight="60"/>
     </GridPane>
 
     <!-- Buttons -->
     <HBox spacing="8" alignment="CENTER">
-        <Button text="Add" onAction="#addFeedback" prefWidth="80" prefHeight="28" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 11px;"/>
-        <Button text="Delete" onAction="#deleteFeedback" prefWidth="80" prefHeight="28" style="-fx-background-color: #F44336; -fx-text-fill: white; -fx-font-size: 11px;"/>
-        <Button text="Clear" onAction="#clearFields" prefWidth="80" prefHeight="28" style="-fx-background-color: #757575; -fx-text-fill: white; -fx-font-size: 11px;"/>
+        <Button text="Add" onAction="#addFeedback" prefWidth="80" prefHeight="28"/>
+        <Button text="Delete" onAction="#deleteFeedback" prefWidth="80" prefHeight="28" styleClass="btn-danger"/>
+        <Button text="Clear" onAction="#clearFields" prefWidth="80" prefHeight="28" styleClass="btn-ghost"/>
     </HBox>
 
 </VBox>

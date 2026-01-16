@@ -5,55 +5,58 @@
 
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="hospital.hospital_management_system.controller.DoctorController"
-      spacing="10" style="-fx-padding: 15; -fx-background-color: white;">
+      spacing="10" styleClass="page">
 
-    <Label text="Doctor Management" style="-fx-font-size: 16; -fx-font-weight: bold;"/>
+    <Label text="Doctor Management" styleClass="section-title"/>
 
     <!-- Search Section -->
-    <HBox spacing="8" alignment="CENTER_LEFT">
+    <HBox spacing="8" alignment="CENTER_LEFT" styleClass="toolbar">
         <TextField fx:id="txtSearch" promptText="Search by specialization..." prefWidth="200" prefHeight="28"/>
-        <Button text="Search" onAction="#searchDoctor" prefWidth="70" prefHeight="28" style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 11px;"/>
+        <Button text="Search" onAction="#searchDoctor" prefWidth="70" prefHeight="28"/>
     </HBox>
 
     <!-- Table -->
-    <TableView fx:id="doctorTable" VBox.vgrow="ALWAYS" prefHeight="400">
-        <columns>
-            <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
-            <TableColumn fx:id="colFirstName" text="First Name" prefWidth="120"/>
-            <TableColumn fx:id="colLastName" text="Last Name" prefWidth="120"/>
-            <TableColumn fx:id="colEmail" text="Email" prefWidth="180"/>
-            <TableColumn fx:id="colSpecialization" text="Specialization" prefWidth="150"/>
-            <TableColumn fx:id="colPhone" text="Phone" prefWidth="120"/>
-        </columns>
-    </TableView>
+    <VBox spacing="8">
+        <TableView fx:id="doctorTable" VBox.vgrow="ALWAYS" prefHeight="350">
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+                <TableColumn fx:id="colFirstName" text="First Name" prefWidth="120"/>
+                <TableColumn fx:id="colLastName" text="Last Name" prefWidth="120"/>
+                <TableColumn fx:id="colEmail" text="Email" prefWidth="180"/>
+                <TableColumn fx:id="colSpecialization" text="Specialization" prefWidth="150"/>
+                <TableColumn fx:id="colPhone" text="Phone" prefWidth="120"/>
+            </columns>
+        </TableView>
+        <Pagination fx:id="pagination" VBox.vgrow="NEVER" maxPageIndicatorCount="5"/>
+    </VBox>
 
     <!-- Form Section -->
-    <GridPane hgap="8" vgap="8">
-        <Label text="First Name:" GridPane.columnIndex="0" GridPane.rowIndex="0" style="-fx-font-size: 11px;"/>
+    <GridPane hgap="8" vgap="8" styleClass="form-section">
+        <Label text="First Name:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="label-subtitle"/>
         <TextField fx:id="txtFirstName" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="150" prefHeight="28"/>
 
-        <Label text="Last Name:" GridPane.columnIndex="0" GridPane.rowIndex="1" style="-fx-font-size: 11px;"/>
+        <Label text="Last Name:" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="label-subtitle"/>
         <TextField fx:id="txtLastName" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="150" prefHeight="28"/>
 
-        <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="2" style="-fx-font-size: 11px;"/>
+        <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="label-subtitle"/>
         <TextField fx:id="txtEmail" GridPane.columnIndex="1" GridPane.rowIndex="2" prefWidth="150" prefHeight="28"/>
 
-        <Label text="Specialization:" GridPane.columnIndex="2" GridPane.rowIndex="0" style="-fx-font-size: 11px;"/>
+        <Label text="Specialization:" GridPane.columnIndex="2" GridPane.rowIndex="0" styleClass="label-subtitle"/>
         <TextField fx:id="txtSpecialization" GridPane.columnIndex="3" GridPane.rowIndex="0" prefWidth="150" prefHeight="28"/>
 
-        <Label text="Phone:" GridPane.columnIndex="2" GridPane.rowIndex="1" style="-fx-font-size: 11px;"/>
+        <Label text="Phone:" GridPane.columnIndex="2" GridPane.rowIndex="1" styleClass="label-subtitle"/>
         <TextField fx:id="txtPhone" GridPane.columnIndex="3" GridPane.rowIndex="1" prefWidth="150" prefHeight="28"/>
 
-        <Label text="Department:" GridPane.columnIndex="2" GridPane.rowIndex="2" style="-fx-font-size: 11px;"/>
+        <Label text="Department:" GridPane.columnIndex="2" GridPane.rowIndex="2" styleClass="label-subtitle"/>
         <ComboBox fx:id="cbDepartment" GridPane.columnIndex="3" GridPane.rowIndex="2" prefWidth="150" prefHeight="28"/>
     </GridPane>
 
     <!-- Buttons -->
     <HBox spacing="8" alignment="CENTER">
-        <Button text="Add" onAction="#addDoctor" prefWidth="80" prefHeight="28" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 11px;"/>
-        <Button text="Update" onAction="#updateDoctor" prefWidth="80" prefHeight="28" style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-font-size: 11px;"/>
-        <Button text="Delete" onAction="#deleteDoctor" prefWidth="80" prefHeight="28" style="-fx-background-color: #F44336; -fx-text-fill: white; -fx-font-size: 11px;"/>
-        <Button text="Clear" onAction="#clearFields" prefWidth="80" prefHeight="28" style="-fx-background-color: #757575; -fx-text-fill: white; -fx-font-size: 11px;"/>
+        <Button text="Add" onAction="#addDoctor" prefWidth="80" prefHeight="28"/>
+        <Button text="Update" onAction="#updateDoctor" prefWidth="80" prefHeight="28" styleClass="btn-secondary"/>
+        <Button text="Delete" onAction="#deleteDoctor" prefWidth="80" prefHeight="28" styleClass="btn-danger"/>
+        <Button text="Clear" onAction="#clearFields" prefWidth="80" prefHeight="28" styleClass="btn-ghost"/>
     </HBox>
 
 </VBox>

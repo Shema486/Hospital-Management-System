@@ -5,26 +5,26 @@
 
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="hospital.hospital_management_system.controller.ReportsController"
-      spacing="10" style="-fx-padding: 15; -fx-background-color: white;">
+      spacing="10" styleClass="page">
 
-    <Label text="Patient Appointment History" styleClass="label-title"/>
+    <Label text="Patient Appointment History" styleClass="section-title"/>
     
     <Separator/>
 
     <!-- Patient Selection -->
-    <HBox spacing="10" alignment="CENTER_LEFT">
-        <Label text="Select Patient:" style="-fx-font-weight: bold;"/>
+    <HBox spacing="10" alignment="CENTER_LEFT" styleClass="toolbar">
+        <Label text="Select Patient:" styleClass="label-subtitle"/>
         <ComboBox fx:id="cbPatient" prefWidth="300"/>
     </HBox>
 
     <!-- Patient Info Display -->
-    <VBox spacing="5" style="-fx-background-color: #E3F2FD; -fx-padding: 15; -fx-background-radius: 5;">
-        <Label fx:id="lblPatientInfo" text="Select a patient to view details" style="-fx-font-size: 14px;"/>
-        <Label fx:id="lblTotalAppointments" text="Total Appointments: 0" style="-fx-font-weight: bold;"/>
+    <VBox spacing="5" styleClass="info-box">
+        <Label fx:id="lblPatientInfo" text="Select a patient to view details" styleClass="label-subtitle"/>
+        <Label fx:id="lblTotalAppointments" text="Total Appointments: 0" styleClass="label-title"/>
     </VBox>
 
     <!-- Appointments Table -->
-    <Label text="Appointment History:" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+    <Label text="Appointment History" styleClass="label-title"/>
     <TableView fx:id="appointmentTable" VBox.vgrow="ALWAYS">
         <columns>
             <TableColumn fx:id="colAppId" text="Appointment ID" prefWidth="100"/>
@@ -36,8 +36,8 @@
     </TableView>
 
     <!-- Info Box -->
-    <VBox spacing="5" style="-fx-background-color: #FFF3E0; -fx-padding: 10; -fx-background-radius: 5;">
-        <Label text="💡 How Tables Work Together (JOIN):" style="-fx-font-weight: bold;"/>
+    <VBox spacing="5" styleClass="info-box">
+        <Label text="How Tables Work Together (JOIN)" styleClass="label-title"/>
         <Label text="• Patient → Appointment (one patient has many appointments)"/>
         <Label text="• Doctor → Appointment (one doctor has many appointments)"/>
         <Label text="• Department → Doctor → Appointment (shows 3-table join)"/>
