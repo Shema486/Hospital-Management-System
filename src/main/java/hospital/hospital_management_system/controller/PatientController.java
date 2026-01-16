@@ -51,6 +51,7 @@ public class PatientController {
     private final ObservableList<Patient> patientList = FXCollections.observableArrayList();
     private static final int ITEMS_PER_PAGE = 10;
     private boolean isSearchMode = false;
+    private boolean isInitializing = true;
 
     @FXML
     public void initialize() {
@@ -72,6 +73,9 @@ public class PatientController {
 
         // Load data
         loadPatients();
+        
+        // Mark initialization as complete
+        isInitializing = false;
 
         // Fill form when selecting a row
         patientTable.getSelectionModel().selectedItemProperty().addListener(
@@ -94,7 +98,8 @@ public class PatientController {
         pagination.setPageCount(pageCount > 0 ? pageCount : 1);
         
         pagination.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
-            if (!isSearchMode) {
+            // Only load page if not initializing and not in search mode
+            if (!isInitializing && !isSearchMode) {
                 loadPage(newIndex.intValue());
             }
         });
