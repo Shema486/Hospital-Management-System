@@ -66,4 +66,16 @@ public class PatientService {
     public void clearCache() {
         patientCache.clear();
     }
+
+    public List<Patient> getPatientsPaginated(int limit, int offset) {
+        List<Patient> patients = patientDAO.getPatientsPaginated(limit, offset);
+        for (Patient p : patients) {
+            patientCache.put(p.getPatientId(), p);
+        }
+        return patients;
+    }
+
+    public int getTotalPatientsCount() {
+        return patientDAO.getTotalPatientsCount();
+    }
 }

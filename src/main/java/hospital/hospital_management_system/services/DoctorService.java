@@ -92,4 +92,22 @@ public class DoctorService {
         
         return sortedList;
     }
+
+    /**
+     * Get paginated list of doctors
+     */
+    public List<Doctor> getDoctorsPaginated(int limit, int offset) {
+        List<Doctor> doctors = doctorDAO.getDoctorsPaginated(limit, offset);
+        for (Doctor d : doctors) {
+            doctorCache.put(d.getDoctorId(), d);
+        }
+        return doctors;
+    }
+
+    /**
+     * Get total count of doctors
+     */
+    public int getTotalDoctorsCount() {
+        return doctorDAO.getTotalDoctorsCount();
+    }
 }
