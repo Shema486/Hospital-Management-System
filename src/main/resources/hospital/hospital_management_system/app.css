@@ -1,0 +1,193 @@
+/* Clean, simple theme */
+.root {
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-font-size: 14px;
+    -fx-base: #ffffff;
+    -fx-background-color: #f1f5f9;
+}
+
+/* Labels */
+.label {
+    -fx-text-fill: #1f2937;
+}
+
+.label-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #111827;
+}
+
+.label-subtitle {
+    -fx-font-size: 12px;
+    -fx-text-fill: #6b7280;
+}
+
+/* Buttons */
+.button {
+    -fx-background-color: #1f6feb;
+    -fx-text-fill: #ffffff;
+    -fx-background-radius: 6;
+    -fx-padding: 6 14;
+}
+.button:hover {
+    -fx-background-color: #1a5fd0;
+}
+.button:pressed {
+    -fx-background-color: #174ea6;
+}
+
+.btn-secondary {
+    -fx-background-color: #6b7280;
+    -fx-text-fill: #ffffff;
+}
+.btn-secondary:hover {
+    -fx-background-color: #5b626f;
+}
+.btn-danger {
+    -fx-background-color: #dc2626;
+    -fx-text-fill: #ffffff;
+}
+.btn-danger:hover {
+    -fx-background-color: #b91c1c;
+}
+.btn-ghost {
+    -fx-background-color: transparent;
+    -fx-text-fill: #1f2937;
+}
+.btn-ghost:hover {
+    -fx-background-color: #e5e7eb;
+}
+
+/* Navigation */
+.sidebar {
+    -fx-background-color: #f7f8fb;
+    -fx-padding: 12;
+    -fx-spacing: 8;
+    -fx-border-color: #e5e7eb;
+    -fx-border-width: 0 1 0 0;
+}
+
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #1f2937;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 8 12;
+    -fx-background-radius: 6;
+}
+.nav-button:hover {
+    -fx-background-color: #e8f1ff;
+}
+
+/* Header & Status */
+.header-bar {
+    -fx-background-color: #ffffff;
+    -fx-padding: 12;
+    -fx-border-color: #e5e7eb;
+    -fx-border-width: 0 0 1 0;
+}
+.header-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1f2937;
+}
+.header-subtitle {
+    -fx-font-size: 11px;
+    -fx-text-fill: #6b7280;
+}
+.status-bar {
+    -fx-background-color: #ffffff;
+    -fx-padding: 8;
+    -fx-border-color: #e5e7eb;
+    -fx-border-width: 1 0 0 0;
+}
+
+/* Page layout helpers */
+.page {
+    -fx-background-color: #ffffff;
+    -fx-padding: 16;
+    -fx-spacing: 12;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #e5e7eb;
+    -fx-border-width: 1;
+}
+.toolbar {
+    -fx-background-color: #f7f8fb;
+    -fx-padding: 8;
+    -fx-spacing: 8;
+    -fx-border-color: #e5e7eb;
+    -fx-border-width: 0 0 1 0;
+}
+.section-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+.form-section {
+    -fx-background-color: #ffffff;
+    -fx-padding: 12;
+    -fx-border-color: #e5e7eb;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+.info-box {
+    -fx-background-color: #eef2ff;
+    -fx-padding: 10;
+    -fx-background-radius: 6;
+}
+
+/* Text input controls */
+.text-field, .text-area, .combo-box, .date-picker {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #d0d7de;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 6 8;
+}
+.text-field:focused, .text-area:focused, .combo-box:focused, .date-picker:focused {
+    -fx-border-color: #2f80ed;
+    -fx-focus-color: #2f80ed;
+    -fx-faint-focus-color: transparent;
+}
+.text-area .content {
+    -fx-background-color: #ffffff;
+}
+
+/* Tables */
+.table-view {
+    -fx-border-color: #e5e7eb;
+    -fx-border-radius: 6;
+}
+.table-row-cell:filled:selected, .table-row-cell:filled:selected .text {
+    -fx-background-color: #e8f1ff;
+    -fx-text-fill: #1f2937;
+}
+.table-view .column-header-background {
+    -fx-background-color: #f5f7fa;
+}
+.table-view .column-header .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #1f2937;
+}
+
+/* Tabs */
+.tab-pane .tab-header-background {
+    -fx-background-color: #f8f9fb;
+}
+
+/* Cards */
+.card {
+    -fx-background-color: #ffffff;
+    -fx-padding: 16;
+    -fx-background-radius: 8;
+    -fx-border-color: #e5e7eb;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+}
+.card-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+.card-text {
+    -fx-font-size: 11px;
+    -fx-text-fill: #6b7280;
+}
