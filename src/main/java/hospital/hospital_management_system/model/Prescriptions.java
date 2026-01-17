@@ -31,7 +31,5 @@ public class Prescriptions {
     public String getNotes() { return notes; }
 
     public void setPrescriptionId(Long prescriptionId) { this.prescriptionId = prescriptionId; }
-    public void setAppointmentId(Long appointmentId) { this.appointmentId = appointmentId; }
-    public void setPrescriptionDate(LocalDateTime prescriptionDate) { this.prescriptionDate = prescriptionDate; }
-    public void setNotes(String notes) { this.notes = notes; }
+
 }

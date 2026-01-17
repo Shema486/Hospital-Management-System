@@ -61,19 +61,10 @@ public class Appointment {
     public String getReason() { return reason; }
 
     // Setters
-    public void setAppointmentId(Long appointmentId) { this.appointmentId = appointmentId; }
 
     public void setPatient(Patient patient) { this.patient = patient; }
 
     public void setDoctor(Doctor doctor) { this.doctor = doctor; }
-
-    public void setAppointmentDate(LocalDateTime appointmentDate) {
-        this.appointmentDate = appointmentDate;
-    }
-
-    public void setStatus(String status) { this.status = status; }
-
-    public void setReason(String reason) { this.reason = reason; }
 
     @Override
     public String toString() {

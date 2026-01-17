@@ -42,11 +42,8 @@ public class PatientFeedback {
     public LocalDate getFeedbackDate() { return feedbackDate; }
 
     // Setters
-    public void setFeedbackId(Long feedbackId) { this.feedbackId = feedbackId; }
     public void setPatient(Patient patient) { this.patient = patient; }
-    public void setRating(int rating) { this.rating = rating; }
-    public void setComments(String comments) { this.comments = comments; }
-    public void setFeedbackDate(LocalDate feedbackDate) { this.feedbackDate = feedbackDate; }
+
 
     @Override
     public String toString() {
