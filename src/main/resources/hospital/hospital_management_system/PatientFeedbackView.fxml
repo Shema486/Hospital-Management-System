@@ -13,7 +13,7 @@
     <TableView fx:id="feedbackTable" VBox.vgrow="ALWAYS" prefHeight="400">
         <columns>
             <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
-            <TableColumn fx:id="colPatientId" text="Patient ID" prefWidth="100"/>
+            <TableColumn fx:id="colPatientName" text="Patient Name" prefWidth="150"/>
             <TableColumn fx:id="colRating" text="Rating" prefWidth="80"/>
             <TableColumn fx:id="colComments" text="Comments" prefWidth="350"/>
             <TableColumn fx:id="colDate" text="Date" prefWidth="150"/>
@@ -22,8 +22,8 @@
 
     <!-- Form Section -->
     <GridPane hgap="8" vgap="8" styleClass="form-section">
-        <Label text="Patient ID:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="label-subtitle"/>
-        <TextField fx:id="txtPatientId" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="200" prefHeight="28"/>
+        <Label text="Patient:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="label-subtitle"/>
+        <ComboBox fx:id="cbPatient" promptText="Select Patient" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="200" prefHeight="28"/>
 
         <Label text="Rating (1-5):" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="label-subtitle"/>
         <ComboBox fx:id="cbRating" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="200" prefHeight="28"/>
