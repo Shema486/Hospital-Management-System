@@ -180,6 +180,50 @@ public class PatientDAO {
         return 0;
     }
 
+    /**
+     * Check if contact number exists in patients table
+     * @param contactNumber The contact number to check
+     * @param excludePatientId Patient ID to exclude from check (for updates, pass 0 if not needed)
+     * @return true if contact number exists, false otherwise
+     */
+    public boolean contactExistsInPatients(String contactNumber, long excludePatientId) {
+        String sql = "SELECT COUNT(*) FROM patients WHERE contact_number = ? AND patient_id != ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, contactNumber);
+            ps.setLong(2, excludePatientId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Check if contact number exists in doctors table
+     * @param contactNumber The contact number to check
+     * @return true if contact number exists, false otherwise
+     */
+    public boolean contactExistsInDoctors(String contactNumber) {
+        String sql = "SELECT COUNT(*) FROM doctors WHERE phone = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, contactNumber);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 
     private Patient mapRowToPatient(ResultSet rs) throws SQLException {
         return new Patient(
