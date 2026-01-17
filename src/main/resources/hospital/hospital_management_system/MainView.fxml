@@ -5,7 +5,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
             fx:controller="hospital.hospital_management_system.controller.MainController"
-            prefHeight="800" prefWidth="1400">
+            prefHeight="600" prefWidth="1000">
 
     <top>
         <HBox styleClass="header-bar" alignment="CENTER_LEFT" spacing="12">
@@ -25,6 +25,7 @@
             <Button text="Feedback" onAction="#showFeedback" styleClass="nav-button"/>
             <Button text="Inventory" onAction="#showInventory" styleClass="nav-button"/>
             <Button text="Reports" onAction="#showReports" styleClass="nav-button"/>
+            <Button text="🏠Back to home" onAction="#showHome" styleClass="nav-button"/>
         </VBox>
     </left>
 
