@@ -2,6 +2,9 @@ package hospital.hospital_management_system.controller;
 
 import hospital.hospital_management_system.model.Patient;
 import hospital.hospital_management_system.services.PatientService;
+import hospital.hospital_management_system.services.AppointmentService;
+import hospital.hospital_management_system.services.PrescriptionService;
+import hospital.hospital_management_system.model.Appointment;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -48,6 +51,8 @@ public class PatientController {
     private Pagination pagination;
 
     private final PatientService patientService = new PatientService();
+    private final AppointmentService appointmentService = new AppointmentService();
+    private final PrescriptionService prescriptionService = new PrescriptionService();
     private final ObservableList<Patient> patientList = FXCollections.observableArrayList();
     private static final int ITEMS_PER_PAGE = 10;
     private boolean isSearchMode = false;
@@ -67,6 +72,19 @@ public class PatientController {
 
         // Gender options
         cbGender.getItems().addAll("Male", "Female", "Other");
+
+        // Disable future dates in DOB DatePicker
+        dpDob.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                LocalDate today = LocalDate.now();
+                setDisable(empty || date.isAfter(today));
+                if (date.isAfter(today)) {
+                    setStyle("-fx-background-color: #ffcccc;"); // Visual indication
+                }
+            }
+        });
 
         // Initialize pagination
         initializePagination();
@@ -124,12 +142,53 @@ public class PatientController {
 
     @FXML
     private void addPatient() {
+        // Validate required fields
+        String firstName = txtFirstName.getText().trim();
+        if (firstName == null || firstName.isEmpty()) {
+            showWarning("Validation Error", "First name is required. Please enter the patient's first name.");
+            return;
+        }
+
+        String lastName = txtLastName.getText().trim();
+        if (lastName == null || lastName.isEmpty()) {
+            showWarning("Validation Error", "Last name is required. Please enter the patient's last name.");
+            return;
+        }
+
+        if (dpDob.getValue() == null) {
+            showWarning("Validation Error", "Date of birth is required. Please select the patient's date of birth.");
+            return;
+        }
+
+        // Validate DOB is not in the future
+        if (dpDob.getValue().isAfter(LocalDate.now())) {
+            showWarning("Validation Error", "Date of birth cannot be in the future. Please select a valid date of birth.");
+            return;
+        }
+
+        if (cbGender.getValue() == null || cbGender.getValue().isEmpty()) {
+            showWarning("Validation Error", "Gender is required. Please select the patient's gender.");
+            return;
+        }
+
+        String contact = txtContact.getText().trim();
+        if (contact == null || contact.isEmpty()) {
+            showWarning("Validation Error", "Contact number is required. Please enter the patient's contact number.");
+            return;
+        }
+
+        // Validate contact number is unique across patients and doctors
+        if (!patientService.isContactNumberUnique(contact, 0)) {
+            showWarning("Validation Error", "This contact number already exists. Please use a different contact number.");
+            return;
+        }
+
         Patient patient = new Patient(
-                txtFirstName.getText(),
-                txtLastName.getText(),
+                firstName,
+                lastName,
                 dpDob.getValue(),
                 cbGender.getValue(),
-                txtContact.getText(),
+                contact,
                 txtAddress.getText()
         );
 
@@ -149,28 +208,106 @@ public class PatientController {
     @FXML
     private void updatePatient() {
         Patient selected = patientTable.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            selected.setFirstName(txtFirstName.getText());
-            selected.setLastName(txtLastName.getText());
-            selected.setDob(dpDob.getValue());
-            selected.setGender(cbGender.getValue());
-            selected.setContact_number(txtContact.getText());
-            selected.setAddress(txtAddress.getText());
-
-            patientService.updatePatient(selected);
-            int currentPage = pagination.getCurrentPageIndex();
-            loadPage(currentPage);
-            clearFields();
+        if (selected == null) {
+            showWarning("Selection Error", "Please select a patient to update.");
+            return;
         }
+
+        // Validate required fields
+        String firstName = txtFirstName.getText().trim();
+        if (firstName == null || firstName.isEmpty()) {
+            showWarning("Validation Error", "First name is required. Please enter the patient's first name.");
+            return;
+        }
+
+        String lastName = txtLastName.getText().trim();
+        if (lastName == null || lastName.isEmpty()) {
+            showWarning("Validation Error", "Last name is required. Please enter the patient's last name.");
+            return;
+        }
+
+        if (dpDob.getValue() == null) {
+            showWarning("Validation Error", "Date of birth is required. Please select the patient's date of birth.");
+            return;
+        }
+
+        // Validate DOB is not in the future
+        if (dpDob.getValue().isAfter(LocalDate.now())) {
+            showWarning("Validation Error", "Date of birth cannot be in the future. Please select a valid date of birth.");
+            return;
+        }
+
+        if (cbGender.getValue() == null || cbGender.getValue().isEmpty()) {
+            showWarning("Validation Error", "Gender is required. Please select the patient's gender.");
+            return;
+        }
+
+        String contact = txtContact.getText().trim();
+        if (contact == null || contact.isEmpty()) {
+            showWarning("Validation Error", "Contact number is required. Please enter the patient's contact number.");
+            return;
+        }
+
+        // Validate contact number is unique across patients and doctors (excluding current patient)
+        if (!patientService.isContactNumberUnique(contact, selected.getPatientId())) {
+            showWarning("Validation Error", "This contact number already exists. Please use a different contact number.");
+            return;
+        }
+
+        selected.setFirstName(firstName);
+        selected.setLastName(lastName);
+        selected.setDob(dpDob.getValue());
+        selected.setGender(cbGender.getValue());
+        selected.setContact_number(contact);
+        selected.setAddress(txtAddress.getText());
+
+        patientService.updatePatient(selected);
+        int currentPage = pagination.getCurrentPageIndex();
+        loadPage(currentPage);
+        clearFields();
     }
 
     @FXML
     private void deletePatient() {
         Patient selected = patientTable.getSelectionModel().getSelectedItem();
-        if (selected != null) {
+        if (selected == null) {
+            showWarning("Selection Error", "Please select a patient to delete.");
+            return;
+        }
+
+        // Check if patient has appointments with prescriptions
+        // When deleting a patient, appointments are cascaded, but appointments with prescriptions cannot be deleted
+        try {
+            List<Appointment> patientAppointments = appointmentService.getAll().stream()
+                    .filter(app -> app.getPatient() != null && app.getPatient().getPatientId() == selected.getPatientId())
+                    .toList();
+
+            for (Appointment appointment : patientAppointments) {
+                if (prescriptionService.hasPrescriptionForAppointment(appointment.getAppointmentId())) {
+                    showWarning("Cannot Delete Patient", 
+                        "This patient cannot be deleted because they have appointments with prescriptions. " +
+                        "Please delete the associated prescriptions first before deleting the patient.");
+                    return;
+                }
+            }
+        } catch (Exception e) {
+            // If checking fails, continue with deletion attempt (will fail at database level with proper error)
+        }
+
+        try {
             patientService.deletePatient(selected.getPatientId());
             loadPatients();
             clearFields();
+        } catch (Exception e) {
+            String errorMessage = e.getMessage();
+            if (errorMessage != null && errorMessage.contains("foreign key constraint")) {
+                showWarning("Cannot Delete Patient", 
+                    "This patient cannot be deleted because they have appointments with prescriptions. " +
+                    "Please delete the associated prescriptions first before deleting the patient.");
+            } else {
+                showWarning("Error", "Failed to delete patient: " + (errorMessage != null ? errorMessage : "Unknown error"));
+            }
+            e.printStackTrace();
         }
     }
 
@@ -188,6 +325,14 @@ public class PatientController {
         } else {
             loadPatients();
         }
+    }
+
+    private void showWarning(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     @FXML

@@ -8,7 +8,7 @@ import javafx.scene.layout.BorderPane;
 import java.io.IOException;
 
 public class MainController {
-    
+
     @FXML private BorderPane mainPane;
 
     @FXML
@@ -40,20 +40,24 @@ public class MainController {
     private void showFeedback() {
         loadView("PatientFeedbackView.fxml");
     }
-    
+
     @FXML
     private void showInventory() {
         loadView("MedicalInventoryView.fxml");
     }
-    
+
     @FXML
     private void showReports() {
         loadView("ReportsView.fxml");
     }
-    
+
     @FXML
     private void showPrescriptionItems() {
         loadView("PrescriptionItemView.fxml");
+    }
+    @FXML private  void showHome(){
+        mainPane.getChildren().clear();
+
     }
 
     private void loadView(String fxmlFile) {

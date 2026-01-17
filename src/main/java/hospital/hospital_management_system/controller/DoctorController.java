@@ -2,12 +2,16 @@ package hospital.hospital_management_system.controller;
 
 import hospital.hospital_management_system.model.Department;
 import hospital.hospital_management_system.model.Doctor;
+import hospital.hospital_management_system.model.Appointment;
 import hospital.hospital_management_system.services.DoctorService;
 import hospital.hospital_management_system.services.DepartmentService;
+import hospital.hospital_management_system.services.AppointmentService;
+import hospital.hospital_management_system.services.PrescriptionService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.util.StringConverter;
 
 import java.util.List;
 
@@ -32,6 +36,8 @@ public class DoctorController {
 
     private final DoctorService doctorService = new DoctorService();
     private final DepartmentService departmentService = new DepartmentService();
+    private final AppointmentService appointmentService = new AppointmentService();
+    private final PrescriptionService prescriptionService = new PrescriptionService();
     private final ObservableList<Doctor> doctorList = FXCollections.observableArrayList();
     private static final int ITEMS_PER_PAGE = 10;
     private boolean isSearchMode = false;
@@ -92,6 +98,19 @@ public class DoctorController {
     private void loadDepartments() {
         List<Department> departments = departmentService.getAllDepartments();
         cbDepartment.setItems(FXCollections.observableArrayList(departments));
+        
+        // Set StringConverter to display department name instead of object representation
+        cbDepartment.setConverter(new StringConverter<Department>() {
+            @Override
+            public String toString(Department department) {
+                return department == null ? "" : department.getDeptName();
+            }
+
+            @Override
+            public Department fromString(String string) {
+                return null;
+            }
+        });
     }
 
     private void loadDoctors() {
@@ -105,8 +124,50 @@ public class DoctorController {
 
     @FXML
     private void addDoctor() {
-        Doctor doctor = new Doctor(txtFirstName.getText(), txtLastName.getText(), 
-            txtEmail.getText(), txtSpecialization.getText(), cbDepartment.getValue(), txtPhone.getText());
+        // Validate required fields
+        String firstName = txtFirstName.getText().trim();
+        if (firstName == null || firstName.isEmpty()) {
+            showWarning("Validation Error", "First name is required. Please enter the doctor's first name.");
+            return;
+        }
+
+        String lastName = txtLastName.getText().trim();
+        if (lastName == null || lastName.isEmpty()) {
+            showWarning("Validation Error", "Last name is required. Please enter the doctor's last name.");
+            return;
+        }
+
+        String email = txtEmail.getText().trim();
+        if (email == null || email.isEmpty()) {
+            showWarning("Validation Error", "Email is required. Please enter the doctor's email address.");
+            return;
+        }
+
+        // Validate email is unique
+        if (!doctorService.isEmailUnique(email, 0)) {
+            showWarning("Validation Error", "This email already exists. Please use a different email address.");
+            return;
+        }
+
+        String specialization = txtSpecialization.getText().trim();
+        if (specialization == null || specialization.isEmpty()) {
+            showWarning("Validation Error", "Specialization is required. Please enter the doctor's specialization.");
+            return;
+        }
+
+        String contact = txtPhone.getText().trim();
+        if (contact == null || contact.isEmpty()) {
+            showWarning("Validation Error", "Contact number is required. Please enter the doctor's contact number.");
+            return;
+        }
+
+        // Validate contact number is unique across patients and doctors
+        if (!doctorService.isContactNumberUnique(contact, 0)) {
+            showWarning("Validation Error", "This contact number already exists. Please use a different contact number.");
+            return;
+        }
+
+        Doctor doctor = new Doctor(firstName, lastName, email, specialization, cbDepartment.getValue(), contact);
         doctorService.addDoctor(doctor);
         int currentPage = pagination.getCurrentPageIndex();
         loadDoctors();
@@ -123,27 +184,107 @@ public class DoctorController {
     @FXML
     private void updateDoctor() {
         Doctor selected = doctorTable.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            selected.setFirstName(txtFirstName.getText());
-            selected.setLastName(txtLastName.getText());
-            selected.setEmail(txtEmail.getText());
-            selected.setSpecialization(txtSpecialization.getText());
-            selected.setPhone(txtPhone.getText());
-            selected.setDepartmentId(cbDepartment.getValue());
-            doctorService.updateDoctor(selected);
-            int currentPage = pagination.getCurrentPageIndex();
-            loadPage(currentPage);
-            clearFields();
+        if (selected == null) {
+            showWarning("Selection Error", "Please select a doctor to update.");
+            return;
         }
+
+        // Validate required fields
+        String firstName = txtFirstName.getText().trim();
+        if (firstName == null || firstName.isEmpty()) {
+            showWarning("Validation Error", "First name is required. Please enter the doctor's first name.");
+            return;
+        }
+
+        String lastName = txtLastName.getText().trim();
+        if (lastName == null || lastName.isEmpty()) {
+            showWarning("Validation Error", "Last name is required. Please enter the doctor's last name.");
+            return;
+        }
+
+        String email = txtEmail.getText().trim();
+        if (email == null || email.isEmpty()) {
+            showWarning("Validation Error", "Email is required. Please enter the doctor's email address.");
+            return;
+        }
+
+        // Validate email is unique (excluding current doctor)
+        if (!doctorService.isEmailUnique(email, selected.getDoctorId())) {
+            showWarning("Validation Error", "This email already exists. Please use a different email address.");
+            return;
+        }
+
+        String specialization = txtSpecialization.getText().trim();
+        if (specialization == null || specialization.isEmpty()) {
+            showWarning("Validation Error", "Specialization is required. Please enter the doctor's specialization.");
+            return;
+        }
+
+        String contact = txtPhone.getText().trim();
+        if (contact == null || contact.isEmpty()) {
+            showWarning("Validation Error", "Contact number is required. Please enter the doctor's contact number.");
+            return;
+        }
+
+        // Validate contact number is unique across patients and doctors (excluding current doctor)
+        if (!doctorService.isContactNumberUnique(contact, selected.getDoctorId())) {
+            showWarning("Validation Error", "This contact number already exists. Please use a different contact number.");
+            return;
+        }
+
+        selected.setFirstName(firstName);
+        selected.setLastName(lastName);
+        selected.setEmail(email);
+        selected.setSpecialization(specialization);
+        selected.setPhone(contact);
+        selected.setDepartmentId(cbDepartment.getValue());
+        doctorService.updateDoctor(selected);
+        int currentPage = pagination.getCurrentPageIndex();
+        loadPage(currentPage);
+        clearFields();
     }
 
     @FXML
     private void deleteDoctor() {
         Doctor selected = doctorTable.getSelectionModel().getSelectedItem();
-        if (selected != null) {
+        if (selected == null) {
+            showWarning("Selection Error", "Please select a doctor to delete.");
+            return;
+        }
+
+        // Check if doctor has appointments with prescriptions
+        // When deleting a doctor, appointments are cascaded, but appointments with prescriptions cannot be deleted
+        try {
+            List<Appointment> doctorAppointments = appointmentService.getAll().stream()
+                    .filter(app -> app.getDoctor() != null && app.getDoctor().getDoctorId() == selected.getDoctorId())
+                    .toList();
+
+            for (Appointment appointment : doctorAppointments) {
+                if (prescriptionService.hasPrescriptionForAppointment(appointment.getAppointmentId())) {
+                    showWarning("Cannot Delete Doctor", 
+                        "This doctor cannot be deleted because they have appointments with prescriptions. " +
+                        "Please delete the associated prescriptions first before deleting the doctor.");
+                    return;
+                }
+            }
+        } catch (Exception e) {
+            // If checking fails, continue with deletion attempt (will fail at database level with proper error)
+        }
+
+        try {
             doctorService.deleteDoctor(selected.getDoctorId());
             loadDoctors();
             clearFields();
+        } catch (Exception e) {
+            String errorMessage = e.getMessage();
+            if (errorMessage != null && errorMessage.contains("foreign key constraint")) {
+                showWarning("Cannot Delete Doctor", 
+                    "This doctor cannot be deleted because they have appointments with prescriptions. " +
+                    "Please delete the associated prescriptions first before deleting the doctor.");
+            } else {
+                showWarning("Error", "Failed to delete doctor: " + (errorMessage != null ? errorMessage : "Unknown error"));
+            }
+            e.printStackTrace();
         }
     }
 
@@ -171,5 +312,13 @@ public class DoctorController {
         txtSpecialization.clear();
         txtPhone.clear();
         cbDepartment.setValue(null);
+    }
+
+    private void showWarning(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

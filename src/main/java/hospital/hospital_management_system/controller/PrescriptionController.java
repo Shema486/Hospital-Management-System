@@ -70,36 +70,43 @@ public class PrescriptionController {
 
     @FXML
     private void addPrescription() {
-        if (cbAppointment.getValue() != null) {
-            Prescriptions prescription = new Prescriptions(
-                cbAppointment.getValue().getAppointmentId(),
-                LocalDateTime.now(),
-                txtNotes.getText()
-            );
-            prescriptionService.addPrescription(prescription);
-            loadPrescriptions();
-            clearFields();
+        if (cbAppointment.getValue() == null) {
+            showWarning("Validation Error", "Appointment is required. Please select an appointment.");
+            return;
         }
+
+        Prescriptions prescription = new Prescriptions(
+            cbAppointment.getValue().getAppointmentId(),
+            LocalDateTime.now(),
+            txtNotes.getText()
+        );
+        prescriptionService.addPrescription(prescription);
+        loadPrescriptions();
+        clearFields();
     }
 
     @FXML
     private void updatePrescription() {
         Prescriptions selected = prescriptionTable.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            prescriptionService.updatePrescriptionNotes(selected.getPrescriptionId(), txtNotes.getText());
-            loadPrescriptions();
-            clearFields();
+        if (selected == null) {
+            showWarning("Selection Error", "Please select a prescription to update.");
+            return;
         }
+        prescriptionService.updatePrescriptionNotes(selected.getPrescriptionId(), txtNotes.getText());
+        loadPrescriptions();
+        clearFields();
     }
 
     @FXML
     private void deletePrescription() {
         Prescriptions selected = prescriptionTable.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            prescriptionService.deletePrescription(selected.getPrescriptionId());
-            loadPrescriptions();
-            clearFields();
+        if (selected == null) {
+            showWarning("Selection Error", "Please select a prescription to delete.");
+            return;
         }
+        prescriptionService.deletePrescription(selected.getPrescriptionId());
+        loadPrescriptions();
+        clearFields();
     }
 
     @FXML
@@ -146,5 +153,13 @@ public class PrescriptionController {
             doctorName = "Dr. " + appointment.getDoctor().getLastName();
         }
         return "#" + appointmentId + " - " + patientName + " - " + doctorName;
+    }
+
+    private void showWarning(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

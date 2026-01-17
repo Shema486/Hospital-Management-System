@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.util.StringConverter;
 
 import java.util.HashMap;
 import java.util.List;
@@ -63,19 +64,25 @@ public class PrescriptionItemController {
             appointmentById.put(appointment.getAppointmentId(), appointment);
         }
         cbPrescription.setItems(FXCollections.observableArrayList(prescriptions));
-        cbPrescription.setCellFactory(lv -> new ListCell<Prescriptions>() {
+        
+        // Set StringConverter to display proper label instead of package name
+        cbPrescription.setConverter(new StringConverter<Prescriptions>() {
             @Override
-            protected void updateItem(Prescriptions item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    Appointment app = appointmentById.get(item.getAppointmentId());
-                    setText(getPrescriptionLabel(item, app));
+            public String toString(Prescriptions prescription) {
+                if (prescription == null) {
+                    return "";
                 }
+                Appointment app = appointmentById.get(prescription.getAppointmentId());
+                return getPrescriptionLabel(prescription, app);
+            }
+
+            @Override
+            public Prescriptions fromString(String string) {
+                return null;
             }
         });
-        cbPrescription.setButtonCell(new ListCell<Prescriptions>() {
+        
+        cbPrescription.setCellFactory(lv -> new ListCell<Prescriptions>() {
             @Override
             protected void updateItem(Prescriptions item, boolean empty) {
                 super.updateItem(item, empty);

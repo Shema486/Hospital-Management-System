@@ -4,12 +4,14 @@ import hospital.hospital_management_system.model.*;
 import hospital.hospital_management_system.services.AppointmentService;
 import hospital.hospital_management_system.services.PatientService;
 import hospital.hospital_management_system.services.DoctorService;
+import hospital.hospital_management_system.services.PrescriptionService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.StringConverter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -34,13 +36,30 @@ public class AppointmentController {
     private final AppointmentService appointmentService = new AppointmentService();
     private final PatientService patientService = new PatientService();
     private final DoctorService doctorService = new DoctorService();
+    private final PrescriptionService prescriptionService = new PrescriptionService();
     private final ObservableList<Appointment> appointmentList = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
         setupTableColumns();
         setupComboBoxes();
+        setupDatePicker();
         loadAppointments();
+    }
+
+    private void setupDatePicker() {
+        // Disable past dates in appointment DatePicker (allow today or future)
+        datePicker.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                LocalDate today = LocalDate.now();
+                setDisable(empty || date.isBefore(today));
+                if (date.isBefore(today)) {
+                    setStyle("-fx-background-color: #ffcccc;"); // Visual indication
+                }
+            }
+        });
     }
 
     private void setupTableColumns() {
@@ -137,6 +156,23 @@ public class AppointmentController {
                 return;
             }
             
+            // Validate date is not in the past
+            LocalDate selectedDate = datePicker.getValue();
+            LocalDate today = LocalDate.now();
+            if (selectedDate.isBefore(today)) {
+                showWarning("Validation Error", "Appointment date cannot be in the past. Please select today or a future date.");
+                return;
+            }
+            
+            // If date is today, validate time is not in the past
+            if (selectedDate.equals(today)) {
+                LocalTime now = LocalTime.now();
+                if (time.isBefore(now)) {
+                    showWarning("Validation Error", "Appointment time cannot be in the past. Please select a future time.");
+                    return;
+                }
+            }
+            
             LocalDateTime appointmentDateTime = datePicker.getValue().atTime(time);
             
             Appointment appointment = new Appointment(
@@ -158,10 +194,40 @@ public class AppointmentController {
     }
 
     @FXML
+    private void handleComplete() {
+        Appointment selected = appointmentTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showWarning("Selection Error", "Please select an appointment to complete");
+            return;
+        }
+        
+        // Check if appointment is already completed
+        if ("Completed".equals(selected.getStatus())) {
+            showWarning("Already Completed", "This appointment is already marked as completed.");
+            return;
+        }
+        
+        try {
+            appointmentService.complete(selected.getAppointmentId());
+            showInfo("Success", "Appointment marked as completed successfully");
+            loadAppointments();
+        } catch (Exception e) {
+            showError("Error", "Failed to complete appointment", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
     private void handleCancel() {
         Appointment selected = appointmentTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showWarning("Selection Error", "Please select an appointment to cancel");
+            return;
+        }
+        
+        // Check if appointment is already cancelled
+        if ("Cancelled".equals(selected.getStatus())) {
+            showWarning("Already Cancelled", "This appointment is already cancelled.");
             return;
         }
         
@@ -183,6 +249,14 @@ public class AppointmentController {
             return;
         }
         
+        // Check if appointment has a prescription (cannot delete if it has prescription)
+        if (prescriptionService.hasPrescriptionForAppointment(selected.getAppointmentId())) {
+            showWarning("Cannot Delete Appointment", 
+                "This appointment cannot be deleted because it has an associated prescription. " +
+                "Please delete the prescription first before deleting the appointment.");
+            return;
+        }
+        
         try {
             appointmentService.delete(selected.getAppointmentId());
             showInfo("Success", "Appointment deleted successfully");
@@ -190,7 +264,15 @@ public class AppointmentController {
         } catch (IllegalStateException e) {
             showWarning("Cannot Delete", e.getMessage());
         } catch (Exception e) {
-            showError("Error", "Failed to delete appointment", e.getMessage());
+            // Check if it's a foreign key constraint violation
+            String errorMessage = e.getMessage();
+            if (errorMessage != null && errorMessage.contains("foreign key constraint")) {
+                showWarning("Cannot Delete Appointment", 
+                    "This appointment cannot be deleted because it is referenced by other records. " +
+                    "Please ensure all related prescriptions are deleted first.");
+            } else {
+                showError("Error", "Failed to delete appointment", errorMessage);
+            }
             e.printStackTrace();
         }
     }

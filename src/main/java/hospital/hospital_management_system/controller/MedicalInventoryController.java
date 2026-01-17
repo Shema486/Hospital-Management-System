@@ -1,8 +1,8 @@
 package hospital.hospital_management_system.controller;
 
-import hospital.hospital_management_system.model.Appointment;
 import hospital.hospital_management_system.model.MedicalInventory;
 import hospital.hospital_management_system.services.MedicalInventoryService;
+import hospital.hospital_management_system.services.PrescriptionItemService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -24,6 +24,7 @@ public class MedicalInventoryController {
     @FXML private TextField txtPrice;
 
     private final MedicalInventoryService inventoryService = new MedicalInventoryService();
+    private final PrescriptionItemService prescriptionItemService = new PrescriptionItemService();
     private final ObservableList<MedicalInventory> inventoryList = FXCollections.observableArrayList();
 
     @FXML
@@ -52,10 +53,63 @@ public class MedicalInventoryController {
 
     @FXML
     private void addItem() {
+        // Validate medicine name
+        String itemName = txtName.getText().trim();
+        if (itemName == null || itemName.isEmpty()) {
+            showWarning("Validation Error", "Medicine name is required. Please enter a medicine name.");
+            return;
+        }
+
+        // Validate medicine name is unique (case-insensitive)
+        if (!inventoryService.isItemNameUnique(itemName, 0)) {
+            showWarning("Validation Error", "This medicine name already exists. Please use a different name.");
+            return;
+        }
+
+        // Validate quantity
+        String quantityText = txtQuantity.getText().trim();
+        if (quantityText == null || quantityText.isEmpty()) {
+            showWarning("Validation Error", "Stock quantity is required. Please enter the quantity.");
+            return;
+        }
+
+        int quantity;
+        try {
+            quantity = Integer.parseInt(quantityText);
+        } catch (NumberFormatException e) {
+            showWarning("Validation Error", "Invalid quantity format. Please enter a valid number.");
+            return;
+        }
+
+        if (quantity < 0) {
+            showWarning("Validation Error", "Stock quantity cannot be negative. Please enter a value greater than or equal to 0.");
+            return;
+        }
+
+        // Validate price
+        String priceText = txtPrice.getText().trim();
+        if (priceText == null || priceText.isEmpty()) {
+            showWarning("Validation Error", "Unit price is required. Please enter the price.");
+            return;
+        }
+
+        BigDecimal price;
+        try {
+            price = new BigDecimal(priceText);
+        } catch (NumberFormatException e) {
+            showWarning("Validation Error", "Invalid price format. Please enter a valid number.");
+            return;
+        }
+
+        if (price.compareTo(BigDecimal.ZERO) < 0) {
+            showWarning("Validation Error", "Unit price cannot be negative. Please enter a value greater than or equal to 0.");
+            return;
+        }
+
         MedicalInventory item = new MedicalInventory(
-            txtName.getText(),
-            Integer.parseInt(txtQuantity.getText()),
-            new BigDecimal(txtPrice.getText())
+            itemName,
+            quantity,
+            price
         );
         inventoryService.addInventoryItem(item);
         loadInventory();
@@ -65,23 +119,102 @@ public class MedicalInventoryController {
     @FXML
     private void updateItem() {
         MedicalInventory selected = inventoryTable.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            selected.setItemName(txtName.getText());
-            selected.setStockQuantity(Integer.parseInt(txtQuantity.getText()));
-            selected.setUnitPrice(new BigDecimal(txtPrice.getText()));
-            inventoryService.updateInventoryItem(selected);
-            loadInventory();
-            clearFields();
+        if (selected == null) {
+            showWarning("Selection Error", "Please select an item to update.");
+            return;
         }
+
+        // Validate medicine name
+        String itemName = txtName.getText().trim();
+        if (itemName == null || itemName.isEmpty()) {
+            showWarning("Validation Error", "Medicine name is required. Please enter a medicine name.");
+            return;
+        }
+
+        // Validate medicine name is unique (case-insensitive, excluding current item)
+        if (!inventoryService.isItemNameUnique(itemName, selected.getItemId())) {
+            showWarning("Validation Error", "This medicine name already exists. Please use a different name.");
+            return;
+        }
+
+        // Validate quantity
+        String quantityText = txtQuantity.getText().trim();
+        if (quantityText == null || quantityText.isEmpty()) {
+            showWarning("Validation Error", "Stock quantity is required. Please enter the quantity.");
+            return;
+        }
+
+        int quantity;
+        try {
+            quantity = Integer.parseInt(quantityText);
+        } catch (NumberFormatException e) {
+            showWarning("Validation Error", "Invalid quantity format. Please enter a valid number.");
+            return;
+        }
+
+        if (quantity < 0) {
+            showWarning("Validation Error", "Stock quantity cannot be negative. Please enter a value greater than or equal to 0.");
+            return;
+        }
+
+        // Validate price
+        String priceText = txtPrice.getText().trim();
+        if (priceText == null || priceText.isEmpty()) {
+            showWarning("Validation Error", "Unit price is required. Please enter the price.");
+            return;
+        }
+
+        BigDecimal price;
+        try {
+            price = new BigDecimal(priceText);
+        } catch (NumberFormatException e) {
+            showWarning("Validation Error", "Invalid price format. Please enter a valid number.");
+            return;
+        }
+
+        if (price.compareTo(BigDecimal.ZERO) < 0) {
+            showWarning("Validation Error", "Unit price cannot be negative. Please enter a value greater than or equal to 0.");
+            return;
+        }
+
+        selected.setItemName(itemName);
+        selected.setStockQuantity(quantity);
+        selected.setUnitPrice(price);
+        inventoryService.updateInventoryItem(selected);
+        loadInventory();
+        clearFields();
     }
 
     @FXML
     private void deleteItem() {
         MedicalInventory selected = inventoryTable.getSelectionModel().getSelectedItem();
-        if (selected != null) {
+        if (selected == null) {
+            showWarning("Selection Error", "Please select an item to delete.");
+            return;
+        }
+
+        // Check if item is used in prescription_items (cannot delete if used)
+        if (prescriptionItemService.isItemUsedInPrescriptions(selected.getItemId())) {
+            showWarning("Cannot Delete Medicine", 
+                "This medicine cannot be deleted because it is used in prescription items. " +
+                "Please remove it from all prescriptions first before deleting.");
+            return;
+        }
+
+        try {
             inventoryService.deleteInventoryItem(selected.getItemId());
             loadInventory();
             clearFields();
+        } catch (Exception e) {
+            String errorMessage = e.getMessage();
+            if (errorMessage != null && errorMessage.contains("foreign key constraint")) {
+                showWarning("Cannot Delete Medicine", 
+                    "This medicine cannot be deleted because it is used in prescription items. " +
+                    "Please remove it from all prescriptions first before deleting.");
+            } else {
+                showWarning("Error", "Failed to delete medicine: " + (errorMessage != null ? errorMessage : "Unknown error"));
+            }
+            e.printStackTrace();
         }
     }
 
@@ -90,5 +223,13 @@ public class MedicalInventoryController {
         txtName.clear();
         txtQuantity.clear();
         txtPrice.clear();
+    }
+
+    private void showWarning(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
