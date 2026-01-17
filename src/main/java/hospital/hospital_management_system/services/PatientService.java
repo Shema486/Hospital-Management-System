@@ -78,4 +78,22 @@ public class PatientService {
     public int getTotalPatientsCount() {
         return patientDAO.getTotalPatientsCount();
     }
+
+    /**
+     * Check if contact number is unique across both patients and doctors
+     * @param contactNumber The contact number to check
+     * @param excludePatientId Patient ID to exclude from check (for updates, pass 0 if not needed)
+     * @return true if contact number is unique, false if it exists in either table
+     */
+    public boolean isContactNumberUnique(String contactNumber, long excludePatientId) {
+        // Check if contact exists in patients (excluding current patient if updating)
+        if (patientDAO.contactExistsInPatients(contactNumber, excludePatientId)) {
+            return false;
+        }
+        // Check if contact exists in doctors
+        if (patientDAO.contactExistsInDoctors(contactNumber)) {
+            return false;
+        }
+        return true;
+    }
 }

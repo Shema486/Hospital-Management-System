@@ -2,6 +2,7 @@ package hospital.hospital_management_system.controller;
 
 import hospital.hospital_management_system.model.Department;
 import hospital.hospital_management_system.services.DepartmentService;
+import hospital.hospital_management_system.services.DoctorService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -20,6 +21,7 @@ public class DepartmentController {
     @FXML private TextField txtFloor;
 
     private final DepartmentService departmentService = new DepartmentService();
+    private final DoctorService doctorService = new DoctorService();
     private final ObservableList<Department> departmentList = FXCollections.observableArrayList();
 
     @FXML
@@ -46,7 +48,34 @@ public class DepartmentController {
 
     @FXML
     private void addDepartment() {
-        Department dept = new Department(txtName.getText(), Integer.parseInt(txtFloor.getText()));
+        // Validate department name
+        String name = txtName.getText().trim();
+        if (name == null || name.isEmpty()) {
+            showWarning("Validation Error", "Department name is required. Please enter a department name.");
+            return;
+        }
+
+        // Validate floor
+        String floorText = txtFloor.getText().trim();
+        if (floorText == null || floorText.isEmpty()) {
+            showWarning("Validation Error", "Floor number is required. Please enter the floor number.");
+            return;
+        }
+
+        int floor;
+        try {
+            floor = Integer.parseInt(floorText);
+        } catch (NumberFormatException e) {
+            showWarning("Validation Error", "Invalid floor format. Please enter a valid number.");
+            return;
+        }
+
+        if (floor < 0) {
+            showWarning("Validation Error", "Floor number cannot be negative. Please enter a value greater than or equal to 0.");
+            return;
+        }
+
+        Department dept = new Department(name, floor);
         departmentService.addDepartment(dept);
         loadDepartments();
         clearFields();
@@ -55,22 +84,83 @@ public class DepartmentController {
     @FXML
     private void updateDepartment() {
         Department selected = departmentTable.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            selected.setDeptName(txtName.getText());
-            selected.setLocationFloor(Integer.parseInt(txtFloor.getText()));
-            departmentService.updateDepartment(selected);
-            loadDepartments();
-            clearFields();
+        if (selected == null) {
+            showWarning("Selection Error", "Please select a department to update.");
+            return;
         }
+
+        // Validate department name
+        String name = txtName.getText().trim();
+        if (name == null || name.isEmpty()) {
+            showWarning("Validation Error", "Department name is required. Please enter a department name.");
+            return;
+        }
+
+        // Validate floor
+        String floorText = txtFloor.getText().trim();
+        if (floorText == null || floorText.isEmpty()) {
+            showWarning("Validation Error", "Floor number is required. Please enter the floor number.");
+            return;
+        }
+
+        int floor;
+        try {
+            floor = Integer.parseInt(floorText);
+        } catch (NumberFormatException e) {
+            showWarning("Validation Error", "Invalid floor format. Please enter a valid number.");
+            return;
+        }
+
+        if (floor < 0) {
+            showWarning("Validation Error", "Floor number cannot be negative. Please enter a value greater than or equal to 0.");
+            return;
+        }
+
+        selected.setDeptName(name);
+        selected.setLocationFloor(floor);
+        departmentService.updateDepartment(selected);
+        loadDepartments();
+        clearFields();
     }
 
     @FXML
     private void deleteDepartment() {
         Department selected = departmentTable.getSelectionModel().getSelectedItem();
-        if (selected != null) {
+        if (selected == null) {
+            showWarning("Selection Error", "Please select a department to delete.");
+            return;
+        }
+
+        // Check if department has doctors (prevent deletion to maintain data integrity)
+        try {
+            var doctorsInDept = doctorService.getAllDoctors().stream()
+                    .filter(doctor -> doctor.getDepartment() != null && 
+                            doctor.getDepartment().getDeptId() == selected.getDeptId())
+                    .toList();
+
+            if (!doctorsInDept.isEmpty()) {
+                showWarning("Cannot Delete Department", 
+                    "This department cannot be deleted because it has " + doctorsInDept.size() + 
+                    " doctor(s) assigned. Please reassign or remove the doctors first before deleting the department.");
+                return;
+            }
+        } catch (Exception e) {
+            // If checking fails, continue with deletion attempt (will fail at database level with proper error)
+        }
+
+        try {
             departmentService.deleteDepartment(selected.getDeptId());
             loadDepartments();
             clearFields();
+        } catch (Exception e) {
+            String errorMessage = e.getMessage();
+            if (errorMessage != null && errorMessage.contains("foreign key constraint")) {
+                showWarning("Cannot Delete Department", 
+                    "This department cannot be deleted because it is referenced by other records.");
+            } else {
+                showWarning("Error", "Failed to delete department: " + (errorMessage != null ? errorMessage : "Unknown error"));
+            }
+            e.printStackTrace();
         }
     }
 
@@ -78,5 +168,13 @@ public class DepartmentController {
     private void clearFields() {
         txtName.clear();
         txtFloor.clear();
+    }
+
+    private void showWarning(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

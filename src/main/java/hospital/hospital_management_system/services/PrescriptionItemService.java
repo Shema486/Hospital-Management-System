@@ -32,4 +32,13 @@ public class PrescriptionItemService {
     public void clearCache() {
         cache.clear();
     }
+
+    /**
+     * Check if medical inventory item is used in any prescription
+     * @param itemId The inventory item ID to check
+     * @return true if item is used, false otherwise
+     */
+    public boolean isItemUsedInPrescriptions(Long itemId) {
+        return dao.isItemUsedInPrescriptions(itemId);
+    }
 }

@@ -78,6 +78,29 @@ public class MedicalInventoryDAO {
         }
     }
 
+    /**
+     * Check if medicine name exists in inventory table
+     * @param itemName The medicine name to check (case-insensitive)
+     * @param excludeItemId Item ID to exclude from check (for updates, pass 0 if not needed)
+     * @return true if medicine name exists, false otherwise
+     */
+    public boolean itemNameExists(String itemName, long excludeItemId) {
+        String sql = "SELECT COUNT(*) FROM medical_inventory WHERE LOWER(item_name) = LOWER(?) AND item_id != ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, itemName);
+            ps.setLong(2, excludeItemId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     // Map row
     private MedicalInventory mapRowToInventory(ResultSet rs) throws SQLException {
         return new MedicalInventory(

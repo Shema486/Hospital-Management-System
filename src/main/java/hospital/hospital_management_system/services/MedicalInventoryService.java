@@ -39,4 +39,14 @@ public class MedicalInventoryService {
     public void clearCache() {
         inventoryCache.clear();
     }
+
+    /**
+     * Check if medicine name is unique in inventory table
+     * @param itemName The medicine name to check (case-insensitive)
+     * @param excludeItemId Item ID to exclude from check (for updates, pass 0 if not needed)
+     * @return true if medicine name is unique, false if it exists
+     */
+    public boolean isItemNameUnique(String itemName, long excludeItemId) {
+        return !inventoryDAO.itemNameExists(itemName, excludeItemId);
+    }
 }
