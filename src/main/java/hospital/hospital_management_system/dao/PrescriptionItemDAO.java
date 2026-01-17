@@ -93,6 +93,30 @@ public class PrescriptionItemDAO {
         }
     }
 
+    /**
+     * Check if medical inventory item is used in any prescription_items
+     * @param itemId The inventory item ID to check
+     * @return true if item is used, false otherwise
+     */
+    public boolean isItemUsedInPrescriptions(Long itemId) {
+        String sql = "SELECT COUNT(*) FROM prescription_items WHERE item_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setLong(1, itemId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     // Mapper
     private PrescriptionItems mapRow(ResultSet rs) throws SQLException {
 
