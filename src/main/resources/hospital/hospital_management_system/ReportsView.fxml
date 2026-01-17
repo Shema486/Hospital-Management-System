@@ -34,14 +34,4 @@
             <TableColumn fx:id="colStatus" text="Status" prefWidth="100"/>
         </columns>
     </TableView>
-
-    <!-- Info Box -->
-    <VBox spacing="5" styleClass="info-box">
-        <Label text="How Tables Work Together (JOIN)" styleClass="label-title"/>
-        <Label text="• Patient → Appointment (one patient has many appointments)"/>
-        <Label text="• Doctor → Appointment (one doctor has many appointments)"/>
-        <Label text="• Department → Doctor → Appointment (shows 3-table join)"/>
-        <Label text="• This demonstrates relational database foreign keys!"/>
-    </VBox>
-
 </VBox>

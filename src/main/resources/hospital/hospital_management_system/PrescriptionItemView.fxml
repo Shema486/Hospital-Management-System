@@ -52,14 +52,4 @@
             <Button text="Clear" onAction="#clearFields" prefWidth="80" prefHeight="30" styleClass="btn-ghost"/>
         </HBox>
     </VBox>
-
-    <!-- Info Box -->
-<!--    <VBox spacing="5" style="-fx-background-color: #E8F5E9; -fx-padding: 10; -fx-background-radius: 5;">-->
-<!--        <Label text="💊 How Prescription Items Work:" style="-fx-font-weight: bold;"/>-->
-<!--        <Label text="• Each prescription can have multiple medicines"/>-->
-<!--        <Label text="• Medicines come from Medical Inventory"/>-->
-<!--        <Label text="• Shows dosage instructions and quantity for each medicine"/>-->
-<!--        <Label text="• This is a many-to-many relationship: Prescription ↔ Inventory"/>-->
-<!--    </VBox>-->
-
 </VBox>
