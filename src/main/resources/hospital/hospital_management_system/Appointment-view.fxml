@@ -29,6 +29,7 @@
 
     <HBox spacing="10">
         <Button text="Add" onAction="#handleAdd" prefWidth="80" prefHeight="30"/>
+        <Button text="Complete" onAction="#handleComplete" prefWidth="80" prefHeight="30" styleClass="btn-secondary"/>
         <Button text="Cancel" onAction="#handleCancel" prefWidth="80" prefHeight="30" styleClass="btn-secondary"/>
         <Button text="Delete" onAction="#handleDelete" prefWidth="80" prefHeight="30" styleClass="btn-danger"/>
     </HBox>
