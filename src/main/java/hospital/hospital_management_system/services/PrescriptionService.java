@@ -19,22 +19,7 @@ public class PrescriptionService {
         prescriptionDAO.addPrescription(prescription);
         clearCache(); // Clear cache after adding new data
     }
-    
-    // READ by ID (with caching)
-    public Prescriptions getPrescriptionById(Long id) {
-        // Check cache first
-        if (prescriptionCache.containsKey(id)) {
-            return prescriptionCache.get(id);
-        }
-        
-        // If not in cache, get from database
-        Prescriptions prescription = prescriptionDAO.findById(id);
-        if (prescription != null) {
-            prescriptionCache.put(id, prescription);
-        }
-        return prescription;
-    }
-    
+
     // READ all prescriptions
     public List<Prescriptions> getAllPrescriptions() {
         List<Prescriptions> prescriptions = prescriptionDAO.findAll();
@@ -68,37 +53,6 @@ public class PrescriptionService {
     public void clearCache() {
         prescriptionCache.clear();
     }
-    
-    /**
-     * Sort prescriptions by date (newest first)
-     */
-    public List<Prescriptions> sortByDateNewest(List<Prescriptions> prescriptions) {
-        List<Prescriptions> sorted = new ArrayList<>(prescriptions);
-        
-        Collections.sort(sorted, new Comparator<Prescriptions>() {
-            @Override
-            public int compare(Prescriptions p1, Prescriptions p2) {
-                // Compare dates (reverse order for newest first)
-                return p2.getPrescriptionDate().compareTo(p1.getPrescriptionDate());
-            }
-        });
-        
-        return sorted;
-    }
-    
-    /**
-     * Sort prescriptions by ID
-     */
-    public List<Prescriptions> sortById(List<Prescriptions> prescriptions) {
-        List<Prescriptions> sorted = new ArrayList<>(prescriptions);
-        
-        Collections.sort(sorted, new Comparator<Prescriptions>() {
-            @Override
-            public int compare(Prescriptions p1, Prescriptions p2) {
-                return Long.compare(p1.getPrescriptionId(), p2.getPrescriptionId());
-            }
-        });
-        
-        return sorted;
-    }
+
+
 }

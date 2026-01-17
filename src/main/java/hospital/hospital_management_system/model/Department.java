@@ -26,7 +26,6 @@ public class Department {
     public String getDeptName() {return deptName;}
     public int getLocationFloor() {return locationFloor;}
 
-    public void setDeptId(Long deptId) {this.deptId = deptId;}
     public void setDeptName(String deptName) {this.deptName = deptName;}
     public void setLocationFloor(int locationFloor) {this.locationFloor = locationFloor;}
 

@@ -54,28 +54,6 @@ public class PatientFeedbackDAO {
         return null;
     }
 
-    // READ by Patient
-    public List<PatientFeedback> findByPatient(Long patientId) {
-        List<PatientFeedback> feedbackList = new ArrayList<>();
-        String sql = "SELECT * FROM patient_feedback WHERE patient_id = ?";
-
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setLong(1, patientId);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    feedbackList.add(mapRow(rs));
-                }
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return feedbackList;
-    }
-
     // READ ALL
     public List<PatientFeedback> findAll() {
         List<PatientFeedback> feedbackList = new ArrayList<>();

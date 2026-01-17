@@ -87,23 +87,7 @@ public class DoctorDAO {
         }
         return doctors;
     }
-    public List<Doctor> findDoctorsByDepartment(Long deptId){
-        List<Doctor> doctors = new ArrayList<>();
-        String sql = "SELECT * FROM doctors WHERE dept_id = ?";
-        try(Connection conn = DBConnection.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql)){
-            ps.setLong(1,deptId);
 
-            try(ResultSet rs = ps.executeQuery()){
-                while(rs.next()){
-                    doctors.add(mapRowToDoctor(rs));
-                }
-            }
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
-        return doctors;
-    }
     public void updateDoctor(Doctor doctor){
         String sql = "UPDATE doctors SET first_name = ?, last_name = ?, email = ?, specialization = ?, phone = ?, dept_id = ? WHERE doctor_id = ? ";
         try (Connection conn = DBConnection.getConnection();
@@ -178,6 +162,73 @@ public class DoctorDAO {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    /**
+     * Check if email exists in doctors table
+     * @param email The email to check
+     * @param excludeDoctorId Doctor ID to exclude from check (for updates, pass 0 if not needed)
+     * @return true if email exists, false otherwise
+     */
+    public boolean emailExists(String email, long excludeDoctorId) {
+        String sql = "SELECT COUNT(*) FROM doctors WHERE email = ? AND doctor_id != ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ps.setLong(2, excludeDoctorId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Check if contact number exists in doctors table
+     * @param contactNumber The contact number to check
+     * @param excludeDoctorId Doctor ID to exclude from check (for updates, pass 0 if not needed)
+     * @return true if contact number exists, false otherwise
+     */
+    public boolean contactExistsInDoctors(String contactNumber, long excludeDoctorId) {
+        String sql = "SELECT COUNT(*) FROM doctors WHERE phone = ? AND doctor_id != ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, contactNumber);
+            ps.setLong(2, excludeDoctorId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Check if contact number exists in patients table
+     * @param contactNumber The contact number to check
+     * @return true if contact number exists, false otherwise
+     */
+    public boolean contactExistsInPatients(String contactNumber) {
+        String sql = "SELECT COUNT(*) FROM patients WHERE contact_number = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, contactNumber);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     private Doctor mapRowToDoctor(ResultSet rs) throws SQLException {

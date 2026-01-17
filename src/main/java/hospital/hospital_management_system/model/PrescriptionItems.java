@@ -44,13 +44,7 @@ public class PrescriptionItems {
     // Setters
     public void setPrescription(Prescriptions prescription) {this.prescription = prescription;}
     public void setItem(MedicalInventory item) {this.item = item;}
-    public void setDosageInstruction(String dosageInstruction) {this.dosageInstruction = dosageInstruction;}
-    public void setQuantityDispensed(int quantityDispensed) {
-        if (quantityDispensed <= 0) {
-            throw new IllegalArgumentException("Quantity must be greater than zero");
-        }
-        this.quantityDispensed = quantityDispensed;
-    }
+
 
 
     @Override

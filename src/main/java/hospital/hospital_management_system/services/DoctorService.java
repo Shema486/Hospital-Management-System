@@ -51,47 +51,11 @@ public class DoctorService {
     public List<Doctor> sortDoctorsByLastName(List<Doctor> doctors) {
         List<Doctor> sortedList = new ArrayList<>(doctors);
         
-        Collections.sort(sortedList, new Comparator<Doctor>() {
-            @Override
-            public int compare(Doctor d1, Doctor d2) {
-                return d1.getLastName().compareToIgnoreCase(d2.getLastName());
-            }
-        });
+        Collections.sort(sortedList, (d1, d2) -> d1.getLastName().compareToIgnoreCase(d2.getLastName()));
         
         return sortedList;
     }
 
-    /**
-     * Sort doctors by ID (lowest to highest)
-     */
-    public List<Doctor> sortDoctorsById(List<Doctor> doctors) {
-        List<Doctor> sortedList = new ArrayList<>(doctors);
-        
-        Collections.sort(sortedList, new Comparator<Doctor>() {
-            @Override
-            public int compare(Doctor d1, Doctor d2) {
-                return Long.compare(d1.getDoctorId(), d2.getDoctorId());
-            }
-        });
-        
-        return sortedList;
-    }
-
-    /**
-     * Sort doctors by specialization (A to Z)
-     */
-    public List<Doctor> sortDoctorsBySpecialization(List<Doctor> doctors) {
-        List<Doctor> sortedList = new ArrayList<>(doctors);
-        
-        Collections.sort(sortedList, new Comparator<Doctor>() {
-            @Override
-            public int compare(Doctor d1, Doctor d2) {
-                return d1.getSpecialization().compareToIgnoreCase(d2.getSpecialization());
-            }
-        });
-        
-        return sortedList;
-    }
 
     /**
      * Get paginated list of doctors
@@ -109,5 +73,33 @@ public class DoctorService {
      */
     public int getTotalDoctorsCount() {
         return doctorDAO.getTotalDoctorsCount();
+    }
+
+    /**
+     * Check if email is unique in doctors table
+     * @param email The email to check
+     * @param excludeDoctorId Doctor ID to exclude from check (for updates, pass 0 if not needed)
+     * @return true if email is unique, false if it exists
+     */
+    public boolean isEmailUnique(String email, long excludeDoctorId) {
+        return !doctorDAO.emailExists(email, excludeDoctorId);
+    }
+
+    /**
+     * Check if contact number is unique across both patients and doctors
+     * @param contactNumber The contact number to check
+     * @param excludeDoctorId Doctor ID to exclude from check (for updates, pass 0 if not needed)
+     * @return true if contact number is unique, false if it exists in either table
+     */
+    public boolean isContactNumberUnique(String contactNumber, long excludeDoctorId) {
+        // Check if contact exists in doctors (excluding current doctor if updating)
+        if (doctorDAO.contactExistsInDoctors(contactNumber, excludeDoctorId)) {
+            return false;
+        }
+        // Check if contact exists in patients
+        if (doctorDAO.contactExistsInPatients(contactNumber)) {
+            return false;
+        }
+        return true;
     }
 }
